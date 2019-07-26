@@ -109,7 +109,7 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
               }
             },
             title: {
-              text: '<span style="color:black;">Millions ($)<span>',
+              text: '<span style="color:black;">Amount ($)<span>',
             },
           },
           legend: {
@@ -190,11 +190,11 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
               }
             },
             title: {
-              text: '<span style="color:black;">Millions ($)<span>',
+              text: '<span style="color:black;">Amount ($)<span>',
             },
           },
           legend: {
-            enabled: true,
+            enabled: false,
           },
           tooltip: {
             headerFormat: '<span style="font-size:16px; margin:auto"><b>{point.key}</b></span><table>',
@@ -215,7 +215,7 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
           series: [{
             name: `<b>Amount</b>`,
             data: chartsData,
-            color: '#003BFF'
+            color: '#FF6A00'
           }],
         }
       })
@@ -270,7 +270,7 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
               }
             },
             title: {
-              text: '<span style="color:black;">Millions($)<span>',
+              text: '<span style="color:black;">Amount($)<span>',
             },
           },
           legend: {
@@ -303,7 +303,7 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
           series: [{
             name: `<b>Amount</b>`,
             data: chartsData,
-            color: '#FF6A00'
+            color: '#003BFF'
           }],
         }
       })
@@ -351,11 +351,11 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
               }
             },
             title: {
-              text: '<span style="color:black;">Millions ($)<span>',
+              text: '<span style="color:black;">Amount ($)<span>',
             },
           },
           legend: {
-            enabled: true,
+            enabled: false,
           },
           tooltip: {
             headerFormat: `<span style="font-size:16px; margin:auto"><b>{point.key}</b></span><table>`,
@@ -376,7 +376,7 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
           series: [{
             name: `<b>Amount</b>`,
             data: chartsData,
-            color: '#003BFF'
+            color: '#FF6A00'
           }],
         }
       })
