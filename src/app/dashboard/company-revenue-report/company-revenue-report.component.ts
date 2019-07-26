@@ -49,7 +49,7 @@ export class CompanyRevenueReportComponent implements OnInit {
       //ChartOptions
       this.chartOptions = {
         chart: {
-          type: "column",
+          type: "line",
         },
         events: {},
         title: {
@@ -88,7 +88,7 @@ export class CompanyRevenueReportComponent implements OnInit {
           useHTML: true
         },
         plotOptions: {
-          column: {
+          line: {
             cursor: 'pointer',
             point: {
               events: {
