@@ -1,30 +1,26 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { ChartsData } from '../models/chart-data';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OrderRevenueService {
 
-  apiUrl: string = 'http://localhost:7000/cart-orders/Company';
-
-  officeUrl: string = 'http://localhost:7000/cart-orders/Office';
-
   constructor(private httpClient: HttpClient) { }
 
   getData(param: ChartsData): Observable<any> {
-    return this.httpClient.post('http://localhost:7000/cart-orders/YM', param);
+    return this.httpClient.post(environment.YEAR_BACKEND_URL, param);
   }
 
   getCompanyData(param: ChartsData): Observable<any> {
-    return this.httpClient.post(this.apiUrl, param);
+    return this.httpClient.post(environment.COMPANY_BACKEND_URL, param);
   }
 
   getOfficeData(param: ChartsData): Observable<any> {
-    return this.httpClient.post(this.officeUrl, param);
+    return this.httpClient.post(environment.OFFICE_BACKEND_URL, param);
   }
-
 
 }
