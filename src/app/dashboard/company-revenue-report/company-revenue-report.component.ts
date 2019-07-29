@@ -22,7 +22,7 @@ export class CompanyRevenueReportComponent implements OnInit {
   param: ChartsData;
   clickOptions = [];
 
-  constructor(private service: OrderRevenueService) { }
+  constructor(private companyService: OrderRevenueService) { }
 
   ngOnInit() {
     this.getCompanyWiseChart(this.param)
@@ -32,7 +32,7 @@ export class CompanyRevenueReportComponent implements OnInit {
   getCompanyWiseChart(param: ChartsData) {
     var param = new ChartsData();
     let componentScope = this;
-    this.service.getCompanyData(param).subscribe((result: ChartsData[]) => {
+    this.companyService.getCompanyData(param).subscribe((result: ChartsData[]) => {
       this.result = result;
       let chartsData = [];
       for (var i = 0; i < this.result.length; i++) {
@@ -116,7 +116,7 @@ export class CompanyRevenueReportComponent implements OnInit {
   getOfficeWiseChart(param: ChartsData, code: number, selected?: any) {
     var param = new ChartsData();
     param.code = code;
-    this.service.getOfficeData(param)
+    this.companyService.getOfficeData(param)
       .subscribe(
         (result: ChartsData[]) => {
           this.result = result;

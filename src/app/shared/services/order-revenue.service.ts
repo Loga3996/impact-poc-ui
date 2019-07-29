@@ -10,7 +10,8 @@ export class OrderRevenueService {
 
   apiUrl: string = 'http://localhost:7000/cart-orders/Company';
 
-  officeUrl: string = 'http://localhost:7000/cart-orders/Office'
+  officeUrl: string = 'http://localhost:7000/cart-orders/Office';
+
   constructor(private httpClient: HttpClient) { }
 
   getData(param: ChartsData): Observable<any> {
