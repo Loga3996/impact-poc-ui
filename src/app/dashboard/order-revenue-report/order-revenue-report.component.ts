@@ -23,7 +23,7 @@ export class OrderRevenueReportComponent implements OnInit {
    clickOptionsValue: any;
    year: number;
 
-   constructor(private service: OrderRevenueService) { }
+   constructor(private orderService: OrderRevenueService) { }
 
    ngOnInit() {
       this.getOrderChart(this.param);
@@ -32,7 +32,7 @@ export class OrderRevenueReportComponent implements OnInit {
    getOrderChart(param: ChartsData) {
       var param = new ChartsData();
       let componentScope = this;
-      this.service.getData(param).subscribe((result: ChartsData[]) => {
+      this.orderService.getData(param).subscribe((result: ChartsData[]) => {
          this.result = result;
          let chartsData = [];
          //get chart values
@@ -117,7 +117,7 @@ export class OrderRevenueReportComponent implements OnInit {
    getMonthChart(param: ChartsData, year: number) {
       var param = new ChartsData();
       param.year = year;
-      this.service.getData(param).subscribe((result: ChartsData[]) => {
+      this.orderService.getData(param).subscribe((result: ChartsData[]) => {
          this.result = result;
          let chartsData = [];
          //get chart values
