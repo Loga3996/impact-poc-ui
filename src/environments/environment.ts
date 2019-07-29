@@ -2,9 +2,17 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+
 export const environment = {
-  production: false
+  production: false,
+
+  // backend info
+  YEAR_BACKEND_URL: 'http://localhost:7000/cart-orders/YM',
+  COMPANY_BACKEND_URL: 'http://localhost:7000/cart-orders/Company',
+  OFFICE_BACKEND_URL: 'http://localhost:7000/cart-orders/Office',
+
 };
+
 
 /*
  * For easier debugging in development mode, you can import the following file
