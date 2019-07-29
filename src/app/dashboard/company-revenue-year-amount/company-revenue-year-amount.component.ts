@@ -55,12 +55,12 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
             selectYearOptions: this.result[i].date,
           })
           this.selectValue = this.selectOptions[i].selectYearOptions;
-          this.getCompayWiseAmountBasedOnYear(param, this.selectOptions[i].selectYearOptions);
-          this.getOfficeWiseAmountBasedOnYear(param, this.selectOptions[i].selectYearOptions);
+          console.log(this.selectValue);
+          this.getCompayWiseAmountBasedOnYear(param, this.selectValue);
+          this.getOfficeWiseAmountBasedOnYear(param, this.selectValue);
         }
       })
   }
-
   //Company wise Amount Based On year
   getCompayWiseAmountBasedOnYear(param: ChartsData, year: number) {
     var param = new ChartsData();
@@ -83,7 +83,7 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
             clickYearValue: this.result[i].date,
             clickCodeValue: this.result[i].code
           })
-          this.getCompayMonthWiseAmountBasedOnYear(this.param, year, this.clickOptions[i].clickCodeValue)
+          this.getCompayMonthWiseAmountBasedOnYear(this.param, year, this.clickOptions.slice(-1)[0].clickCodeValue)
         }
         // ChartOptions
         this.companyChartOptions = {
@@ -243,7 +243,7 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
             clickYearValue: this.result[i].date,
             clickCodeValue: this.result[i].code,
           })
-          this.getOfficeMonthWiseAmountBasedOnYear(this.param, year, this.clickOptions[i].clickCodeValue)
+          this.getOfficeMonthWiseAmountBasedOnYear(this.param, year, this.clickOptions.slice(-1)[0].clickCodeValue)
         }
         // chart Options
         this.officeChartOptions = {
@@ -311,21 +311,22 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
   //Month wise office chart amount based on year and company
   getOfficeMonthWiseAmountBasedOnYear(param: ChartsData, year: number, code: number, selected?: any) {
     var param = new ChartsData();
-    param.year = year;
     param.code = code;
+    param.year = year;
     this.chartService
       .getOfficeData(param).
       subscribe((result: ChartsData[]) => {
         this.result = result;
         let chartsData = [];
         //get chart values
-        for (var i = 0; i < this.result.length; i++) {
+        this.result.forEach((r) => {
+          //get X and Y values
           chartsData.push({
-            name: this.result[i].month,
-            y: this.result[i].amount,
-            office: this.result[i].office,
-          })
-        }
+            name: r.month,
+            y: r.amount,
+            office: r.office
+          });
+        });
         const chartTitle = selected && selected.point ? selected.point.name : this.result[0].office;
         // Column Chart
         this.officeMonthChartOptions = {
