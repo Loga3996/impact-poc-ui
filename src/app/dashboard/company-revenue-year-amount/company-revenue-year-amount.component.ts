@@ -8,6 +8,7 @@ import { ChartsData } from 'src/app/shared/models/chart-data';
 import { OrderRevenueService } from 'src/app/shared/services/order-revenue.service';
 //Angular MatSelectChange
 import { MatSelectChange } from '@angular/material/select';
+import { forkJoin, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-company-revenue-year-amount',
@@ -30,11 +31,13 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
   selectOptions = [];
   chartsData = [];
   clickOptions = [];
+  loading: boolean = true;
 
   constructor(private chartService: OrderRevenueService) { }
 
   ngOnInit() {
-    this.getChart(this.param);
+    this.requestDataFromMultipleSources();
+    this.loading = false;
   }
 
   //change chart based on selection value
@@ -42,7 +45,13 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
     this.getCompayWiseAmountBasedOnYear(this.param, selected.value);
     this.getOfficeWiseAmountBasedOnYear(this.param, selected.value);
   }
+  public requestDataFromMultipleSources(): Observable<any> {
+    let response1 = this.getChart(this.param);
+    let response2 = this.getCompayWiseAmountBasedOnYear(this.param, this.year);
+    let response3 = this.getOfficeWiseAmountBasedOnYear(this.param, this.year);
+    return forkJoin([response1, response2, response3]);
 
+  }
   //get Charts Based on selection value
   getChart(param: ChartsData) {
     var param = new ChartsData();
@@ -50,15 +59,15 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
       .getData(param)
       .subscribe((result: ChartsData[]) => {
         this.result = result;
-        for (var i = 0; i < this.result.length; i++) {
+        this.result.forEach((r) => {
+          //get selection values
           this.selectOptions.push({
-            selectYearOptions: this.result[i].date,
-          })
-          this.selectValue = this.selectOptions[i].selectYearOptions;
-          console.log(this.selectValue);
+            selectYearOptions: r.date,
+          });
+          this.selectValue = this.selectOptions.slice(-1)[0].selectYearOptions;
           this.getCompayWiseAmountBasedOnYear(param, this.selectValue);
           this.getOfficeWiseAmountBasedOnYear(param, this.selectValue);
-        }
+        });
       })
   }
   //Company wise Amount Based On year
@@ -71,20 +80,20 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
       subscribe((result: ChartsData[]) => {
         this.result = result;
         let chartsData = [];
-        //get chart values
-        for (var i = 0; i < this.result.length; i++) {
+        this.result.forEach((r) => {
+          //get chart values
           chartsData.push({
-            name: this.result[i].company,
-            y: this.result[i].amount,
-            code: this.result[i].code,
-            year: this.result[i].date,
-          })
+            name: r.company,
+            y: r.amount,
+            code: r.code,
+            year: r.date
+          });
           this.clickOptions.push({
-            clickYearValue: this.result[i].date,
-            clickCodeValue: this.result[i].code
-          })
+            clickYearValue: r.date,
+            clickCodeValue: r.code,
+          });
           this.getCompayMonthWiseAmountBasedOnYear(this.param, year, this.clickOptions.slice(-1)[0].clickCodeValue)
-        }
+        });
         // ChartOptions
         this.companyChartOptions = {
           chart: {
@@ -129,11 +138,7 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
               point: {
                 events: {
                   click: function (event) {
-                    // if (event && event.point && event.point.year && event.point.code) {
                     componentScope.getCompayMonthWiseAmountBasedOnYear(this.param, event.point.year, event.point.code);
-                    // } else {
-                    //   alert('Point is not present in Chart')
-                    // }
                   }
                 }
               }
@@ -157,15 +162,15 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
       subscribe((result: ChartsData[]) => {
         this.result = result;
         let chartsData = [];
-        //get chart values
-        for (var i = 0; i < this.result.length; i++) {
+        this.result.forEach((r) => {
+          //get chart values
           chartsData.push({
-            name: this.result[i].month,
-            y: this.result[i].amount,
-            company: this.result[i].company,
-          })
-        }
-        const chartTitle = selected && selected.point ? selected.point.name : this.result[0].company;
+            name: r.month,
+            y: r.amount,
+            company: r.company,
+          });
+        });
+        const chartTitle = selected && selected.point ? selected.point.name : this.result.slice(-1)[0].company;
         // Chart Options
         this.companyMonthChartOptions = {
           chart: {
@@ -220,7 +225,6 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
         }
       })
   }
-
   //Office wise chart based on year
   getOfficeWiseAmountBasedOnYear(param: ChartsData, year: number) {
     var param = new ChartsData();
@@ -231,20 +235,20 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
       subscribe((result: ChartsData[]) => {
         this.result = result;
         let chartsData = [];
-        //get chart values
-        for (var i = 0; i < this.result.length; i++) {
+        this.result.forEach((r) => {
+          //get chart values
           chartsData.push({
-            name: this.result[i].office,
-            y: this.result[i].amount,
-            year: this.result[i].date,
-            code: this.result[i].code,
-          })
+            name: r.office,
+            y: r.amount,
+            code: r.code,
+            year: r.date
+          });
           this.clickOptions.push({
-            clickYearValue: this.result[i].date,
-            clickCodeValue: this.result[i].code,
-          })
+            clickYearValue: r.date,
+            clickCodeValue: r.code,
+          });
           this.getOfficeMonthWiseAmountBasedOnYear(this.param, year, this.clickOptions.slice(-1)[0].clickCodeValue)
-        }
+        });
         // chart Options
         this.officeChartOptions = {
           chart: {
@@ -327,7 +331,7 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
             office: r.office
           });
         });
-        const chartTitle = selected && selected.point ? selected.point.name : this.result[0].office;
+        const chartTitle = selected && selected.point ? selected.point.name : this.result.slice(-1)[0].office;
         // Column Chart
         this.officeMonthChartOptions = {
           chart: {
