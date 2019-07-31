@@ -1,9 +1,12 @@
 <!-- Order Revenue Chart -->
 <mat-toolbar  fxLayoutGap='20px'>Orders Amount Report</mat-toolbar>
-<div fxLayout='row' fxLayoutGap="10px">
+<div fxLayout="row" fxLayoutAlign="center center" class = 'spinner' *ngIf="loading else loaded">
+  <mat-spinner mode="indeterminate" color="accent"></mat-spinner>
+</div>
+<div fxLayout='row'*ngIf="!loading else loaded"  fxLayoutGap="10px">
   <highcharts-chart
     [Highcharts]="highcharts" 
-    [options]="chartOptions"
+    [options]="yearChartOptions"
     style="width: 100%; height: 300px; display: block;">
   </highcharts-chart>
   <highcharts-chart 
