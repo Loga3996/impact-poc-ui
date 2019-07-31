@@ -15,14 +15,14 @@ import { ChartsData } from 'src/app/shared/models/chart-data';
 
 export class OrderRevenueReportComponent implements OnInit {
    highcharts = Highcharts;
-   chartOptions: any;
+   yearChartOptions: any;
    monthChartOptions: any;
    result: ChartsData[];
    param: ChartsData;
    clickOptions = [];
    clickOptionsValue: any;
    year: number;
-
+   loading:boolean;
    constructor(private orderService: OrderRevenueService) { }
 
    ngOnInit() {
@@ -30,24 +30,26 @@ export class OrderRevenueReportComponent implements OnInit {
    }
    //Orders Amount Chart
    getOrderChart(param: ChartsData) {
+      this.loading=true;
       var param = new ChartsData();
       let componentScope = this;
       this.orderService.getData(param).subscribe((result: ChartsData[]) => {
          this.result = result;
          let chartsData = [];
-         //get chart values
-         for (var i = 0; i < this.result.length; i++) {
+         this.result.forEach((r) => {
+            //get chart values
             chartsData.push({
-               x: this.result[i].date,
-               y: this.result[i].amount,
-            })
+              x: r.date,
+              y: r.amount,
+            });
             this.clickOptions.push({
-               clickOptionsValue: this.result[i].date,
-            })
-            this.getMonthChart(param, this. clickOptions[i].clickOptionsValue)
-         }
+              clickYearValue: r.date,
+            });
+            this.getMonthChart(param, this.clickOptions.slice(-1)[0].clickYearValue);
+          });
+         this.loading=false;
          // Chart Options
-         this.chartOptions = {
+         this.yearChartOptions = {
             chart: {
                type: "column",
             },
@@ -112,7 +114,6 @@ export class OrderRevenueReportComponent implements OnInit {
          }
       })
    }
-
    //Month Wise Chart
    getMonthChart(param: ChartsData, year: number) {
       var param = new ChartsData();
@@ -134,7 +135,7 @@ export class OrderRevenueReportComponent implements OnInit {
             },
             events: {},
             title: {
-               text: `Month Wise Amount for <b>${param.year}</b>`
+               text: `Month Wise Amount for <b>${year}</b>`
             },
             xAxis: {
                type: 'category',
