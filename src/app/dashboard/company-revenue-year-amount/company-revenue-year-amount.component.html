@@ -11,29 +11,35 @@
     </mat-select>
   </mat-form-field>
 </mat-toolbar>
-<!-- Year Wise Company & Office Charts -->
-<div fxLayout='row' fxLayoutGap="10px">
-  <highcharts-chart
-    [Highcharts]="highcharts" 
-    [options]="companyChartOptions"
-    style="width: 100%; height: 300px; display: block;">
-  </highcharts-chart>
-  <highcharts-chart 
-    [Highcharts]="highcharts" 
-    [options]="officeChartOptions"
-    style="width: 100%; height: 300px; display: block;">
-  </highcharts-chart>
+<div fxLayout="row" fxLayoutAlign="center center" class='spinner' *ngIf="loading else loaded">
+  <mat-spinner mode="indeterminate" color="accent"></mat-spinner>
 </div>
-<!-- Month Wise Company & Office Charts -->
-<div fxLayout='row' fxLayoutGap="10px" class='margin-top20px'>
-  <highcharts-chart
-    [Highcharts]="highcharts" 
-    [options]="companyMonthChartOptions"
-    style="width: 100%; height: 300px; display: block;">
-  </highcharts-chart>
-  <highcharts-chart 
-    [Highcharts]="highcharts" 
-    [options]="officeMonthChartOptions"
-    style="width: 100%; height: 300px; display: block;">
-  </highcharts-chart>
+<!-- Charts -->
+<div *ngIf="!loading else loaded">
+  <!-- Year Wise Company & Office Charts -->
+  <div fxLayout='row' fxLayoutGap="10px">
+    <highcharts-chart 
+      [Highcharts]="highcharts" 
+      [options]="companyChartOptions"
+      style="width: 100%; height: 300px; display: block;">
+    </highcharts-chart>
+    <highcharts-chart 
+      [Highcharts]="highcharts" 
+      [options]="officeChartOptions"
+      style="width: 100%; height: 300px; display: block;">
+    </highcharts-chart>
+  </div>
+  <!-- Month Wise Company & Office Charts -->
+  <div fxLayout='row' fxLayoutGap="10px" class='margin-top20px'>
+    <highcharts-chart 
+      [Highcharts]="highcharts" 
+      [options]="companyMonthChartOptions"
+      style="width: 100%; height: 300px; display: block;">
+    </highcharts-chart>
+    <highcharts-chart 
+      [Highcharts]="highcharts" 
+      [options]="officeMonthChartOptions"
+      style="width: 100%; height: 300px; display: block;">
+    </highcharts-chart>
+  </div>
 </div>
