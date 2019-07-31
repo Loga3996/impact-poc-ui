@@ -21,6 +21,7 @@ export class CompanyRevenueReportComponent implements OnInit {
   result: ChartsData[];
   param: ChartsData;
   clickOptions = [];
+  loading: boolean;
 
   constructor(private companyService: OrderRevenueService) { }
 
@@ -30,22 +31,25 @@ export class CompanyRevenueReportComponent implements OnInit {
 
   //Overall company wise amount Chart
   getCompanyWiseChart(param: ChartsData) {
+    this.loading = true;
     var param = new ChartsData();
     let componentScope = this;
     this.companyService.getCompanyData(param).subscribe((result: ChartsData[]) => {
       this.result = result;
       let chartsData = [];
-      for (var i = 0; i < this.result.length; i++) {
+      this.result.forEach((r) => {
+        //get charts data values
         chartsData.push({
-          name: this.result[i].company,
-          y: this.result[i].amount,
-          code: this.result[i].code
-        })
+          name: r.company,
+          y: r.amount,
+          code: r.code
+        });
         this.clickOptions.push({
-          clickOptionsValue: this.result[i].code,
-        })
-        this.getOfficeWiseChart(param, this.clickOptions[i].clickOptionsValue)
-      }
+          clickOptionsValue: r.code,
+        });
+        this.getOfficeWiseChart(param, this.clickOptions.slice(-1)[0].clickOptionsValue);
+        this.loading = false;
+      });
       //ChartOptions
       this.chartOptions = {
         chart: {
@@ -111,7 +115,6 @@ export class CompanyRevenueReportComponent implements OnInit {
       }
     })
   }
-
   //Office Wise Amount Column Chart
   getOfficeWiseChart(param: ChartsData, code: number, selected?: any) {
     var param = new ChartsData();
@@ -122,15 +125,14 @@ export class CompanyRevenueReportComponent implements OnInit {
           this.result = result;
           let chartsData = [];
           this.result.forEach((r) => {
-            //get X and Y values
+            //get charts data values
             chartsData.push({
               name: r.office,
               y: r.amount,
               company: r.company
             });
           });
-          const chartTitle = selected && selected.point ? selected.point.name : this.result[0].company;
-          
+          const chartTitle = selected && selected.point ? selected.point.name : this.result.slice(-1)[0].company;
           //ChartOptions
           this.monthChartOptions = {
             chart: {
