@@ -1,14 +1,15 @@
 //Angular Core
 import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormBuilder } from '@angular/forms';
 //HighCharts Import
-import * as Highcharts from 'highcharts';
+import * as Highcharts from 'highcharts/highstock';
+import * as HC_customEvents from 'highcharts-custom-events';
+
+HC_customEvents(Highcharts);
 //Models
 import { ChartsData } from 'src/app/shared/models/chart-data';
 //Services
 import { OrderRevenueService } from 'src/app/shared/services/order-revenue.service';
-//Angular MatSelectChange
-import { MatSelectChange } from '@angular/material/select';
-import { forkJoin, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-company-revenue-year-amount',
@@ -17,373 +18,278 @@ import { forkJoin, Observable } from 'rxjs';
 })
 
 export class CompanyRevenueYearAmountComponent implements OnInit {
-
   highcharts = Highcharts;
-  companyChartOptions: any;
-  officeChartOptions: any;
-  companyMonthChartOptions: any;
-  officeMonthChartOptions: any;
-  selectValue: number;
+  formGroup: FormGroup;
   result: ChartsData[];
-  param: any;
-  year: number;
-  code: number;
-  selectOptions = [];
-  chartsData = [];
+  param: ChartsData;
+  selectYearOptions = [];
+  selectCompanyOptions = [];
   clickOptions = [];
-  loading: boolean = true;
+  title: string;
+  yearValue: number;
+  companyValue: any;
+  year: number;
+  code: number
+  selected = this.yearValue;
 
-  constructor(private chartService: OrderRevenueService) { }
+  chartOptions: any;
+  offChartOptions: any;
+
+  constructor(
+    public fb: FormBuilder,
+    private chartService: OrderRevenueService
+  ) { }
 
   ngOnInit() {
-    this.requestDataFromMultipleSources();
-    this.loading = false;
+    this.formGroup = this.fb.group({
+      year: this.getYearSelectOptions(this.param),
+      company: this.getCompanySelectOptions(this.param, this.year)
+    });
+    this.formGroup.controls['year'].valueChanges.subscribe((yearValue) => {
+      this.getCompanySelectOptions(this.param, yearValue);
+      this.companyValue = "Select Company";
+    })
+    this.formGroup.controls['company'].valueChanges.subscribe((companyValue) => {
+      const year = this.formGroup.controls['year'].value;
+      this.getYearOrYearCompanyChart(this.param, year, companyValue);
+    })
   }
 
-  //change chart based on selection value
-  onSelect(selected: MatSelectChange) {
-    this.getCompayWiseAmountBasedOnYear(this.param, selected.value);
-    this.getOfficeWiseAmountBasedOnYear(this.param, selected.value);
-  }
-  public requestDataFromMultipleSources(): Observable<any> {
-    let response1 = this.getChart(this.param);
-    let response2 = this.getCompayWiseAmountBasedOnYear(this.param, this.year);
-    let response3 = this.getOfficeWiseAmountBasedOnYear(this.param, this.year);
-    return forkJoin([response1, response2, response3]);
-
-  }
-  //get Charts Based on selection value
-  getChart(param: ChartsData) {
-    var param = new ChartsData();
-    this.chartService
-      .getData(param)
+  // Get Year Select Options 
+  getYearSelectOptions(param: ChartsData) {
+    var param = new ChartsData()
+    this.chartService.getSelectData(param)
       .subscribe((result: ChartsData[]) => {
         this.result = result;
         this.result.forEach((r) => {
-          //get selection values
-          this.selectOptions.push({
-            selectYearOptions: r.date,
-          });
-          this.selectValue = this.selectOptions.slice(-1)[0].selectYearOptions;
-          this.getCompayWiseAmountBasedOnYear(param, this.selectValue);
-          this.getOfficeWiseAmountBasedOnYear(param, this.selectValue);
+          this.selectYearOptions.push({
+            selectYearValue: r.year,
+          })
+          this.yearValue = this.selectYearOptions.slice(-1)[0].selectYearValue; 
         });
+        this.getCompanySelectOptions(this.param, this.yearValue);
       })
   }
-  //Company wise Amount Based On year
-  getCompayWiseAmountBasedOnYear(param: ChartsData, year: number) {
-    var param = new ChartsData();
-    param.year = year;
-    let componentScope = this;
-    this.chartService
-      .getCompanyData(param).
-      subscribe((result: ChartsData[]) => {
-        this.result = result;
-        let chartsData = [];
-        this.result.forEach((r) => {
-          //get chart values
-          chartsData.push({
-            name: r.company,
-            y: r.amount,
-            code: r.code,
-            year: r.date
-          });
-          this.clickOptions.push({
-            clickYearValue: r.date,
-            clickCodeValue: r.code,
-          });
-          this.getCompayMonthWiseAmountBasedOnYear(this.param, year, this.clickOptions.slice(-1)[0].clickCodeValue)
-        });
-        // ChartOptions
-        this.companyChartOptions = {
-          chart: {
-            type: "column"
-          },
-          events: {},
-          title: {
-            text: `Company Wise Amount for <b>${year}</b>`
-          },
-          xAxis: {
-            type: 'category',
-            labels: {
-              style: {
-                color: 'black',
-              }
-            },
-          },
-          yAxis: {
-            labels: {
-              style: {
-                color: 'black',
-              }
-            },
-            title: {
-              text: '<span style="color:black;">Amount ($)<span>',
-            },
-          },
-          legend: {
-            enabled: false,
-          },
-          tooltip: {
-            headerFormat: '<span style="font-size:16px; margin:auto"><b>{point.key}</b></span><table>',
-            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-              '<td style="padding:0"><b>$ {point.y:.2f}</b></td></tr>',
-            footerFormat: '</table>',
-            shared: true,
-            useHTML: true
-          },
-          plotOptions: {
-            column: {
-              cursor: 'pointer',
-              point: {
-                events: {
-                  click: function (event) {
-                    componentScope.getCompayMonthWiseAmountBasedOnYear(this.param, event.point.year, event.point.code);
-                  }
-                }
-              }
-            }
-          },
-          series: [{
-            name: `<b>Amount</b>`,
-            data: chartsData,
-            color: '#003BFF'
-          }],
-        }
-      })
-  }
-  //Month wise Company chart based on year
-  getCompayMonthWiseAmountBasedOnYear(param: ChartsData, year: number, code: number, selected?: any) {
-    var param = new ChartsData();
-    param.code = code;
-    param.year = year;
-    this.chartService
-      .getCompanyData(param).
-      subscribe((result: ChartsData[]) => {
-        this.result = result;
-        let chartsData = [];
-        this.result.forEach((r) => {
-          //get chart values
-          chartsData.push({
-            name: r.month,
-            y: r.amount,
-            company: r.company,
-          });
-        });
-        const chartTitle = selected && selected.point ? selected.point.name : this.result.slice(-1)[0].company;
-        // Chart Options
-        this.companyMonthChartOptions = {
-          chart: {
-            type: "column"
-          },
-          events: {},
-          title: {
-            text: `Month Wise Amount for <b>${chartTitle}</b> Company in <b>${year}</b> `
-          },
-          xAxis: {
-            type: 'category',
-            labels: {
-              style: {
-                color: 'black',
-              }
-            },
-          },
-          yAxis: {
-            labels: {
-              style: {
-                color: 'black',
-              }
-            },
-            title: {
-              text: '<span style="color:black;">Amount ($)<span>',
-            },
-          },
-          legend: {
-            enabled: false,
-          },
-          tooltip: {
-            headerFormat: '<span style="font-size:16px; margin:auto"><b>{point.key}</b></span><table>',
-            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-              '<td style="padding:0"><b>$ {point.y:.2f}</b></td></tr>',
-            footerFormat: '</table>',
-            shared: true,
-            useHTML: true
-          },
-          plotOptions: {
-            column: {
-              cursor: 'pointer',
-              point: {
-                events: {}
-              }
-            }
-          },
-          series: [{
-            name: `<b>Amount</b>`,
-            data: chartsData,
-            color: '#FF6A00'
-          }],
-        }
-      })
-  }
-  //Office wise chart based on year
-  getOfficeWiseAmountBasedOnYear(param: ChartsData, year: number) {
-    var param = new ChartsData();
-    param.year = year;
-    let componentScope = this;
-    this.chartService
-      .getOfficeData(param).
-      subscribe((result: ChartsData[]) => {
-        this.result = result;
-        let chartsData = [];
-        this.result.forEach((r) => {
-          //get chart values
-          chartsData.push({
-            name: r.office,
-            y: r.amount,
-            code: r.code,
-            year: r.date
-          });
-          this.clickOptions.push({
-            clickYearValue: r.date,
-            clickCodeValue: r.code,
-          });
-          this.getOfficeMonthWiseAmountBasedOnYear(this.param, year, this.clickOptions.slice(-1)[0].clickCodeValue)
-        });
-        // chart Options
-        this.officeChartOptions = {
-          chart: {
-            type: "spline"
-          },
-          events: {},
-          title: {
-            text: `Office Wise Amount for <b>${year}</b>`
-          },
-          xAxis: {
-            type: 'category',
-            labels: {
-              style: {
-                color: 'black',
-              }
-            },
-          },
-          yAxis: {
-            labels: {
-              style: {
-                color: 'black',
 
-              }
+  // Get Company select options based on selected year
+  getCompanySelectOptions(param: ChartsData, year: number) {
+    var param = new ChartsData();
+    param.year = year;
+    this.chartService.getSelectData(param)
+      .subscribe((result) => {
+        this.result = result;
+        let companyValue = [];
+        this.result.forEach((r) => {
+          companyValue.push({
+            selectCompanyName: r.company,
+            selectCompanyValue: r.code,
+          })
+          this.selectCompanyOptions = companyValue;
+        });
+        this.getYearOrYearCompanyChart(this.param, year);
+      })
+  }
+
+  //Get Year or Year & Company Month wise Chart based on params
+  getYearOrYearCompanyChart(param: ChartsData, year: number, code?: number) {
+    var param = new ChartsData();
+    param.year = year;
+    param.code = code;
+    let componentScope = this
+    this.chartService.getCompanyData(param).subscribe((result: ChartsData[]) => {
+      this.result = result;
+      let chartsValue = [];
+      this.result.forEach((r) => {
+        chartsValue.push({
+          name: r.months,
+          y: r.amount,
+          year: r.year,
+          code: r.code,
+          mcode: r.mcode,
+        })
+      })
+      this.getMonOffChartBasedOnCom(this.param, chartsValue.slice(-1)[0].year, chartsValue.slice(-1)[0].code, chartsValue.slice(-1)[0].mcode);
+      this.chartOptions = {
+        chart: {
+          type: "column",
+          borderRadius: 10
+        },
+        events: {},
+        title: {
+          text: ''
+        },
+        xAxis: {
+          type: 'category',
+          labels: {
+            style: {
+              color: 'black',
+            }
+          },
+          title: {
+            text: '<span style="color:black;">Months<span>',
+          },
+        },
+        yAxis: {
+          labels: {
+            style: {
+              color: 'black',
+            }
+          },
+          title: {
+            text: '<span style="color:black;">Amount($)<span>',
+          },
+        },
+        legend: {
+          enabled: false,
+        },
+        credits: {
+          enabled: false,
+        },
+        tooltip: {
+          headerFormat: '<span style="font-size:16px; margin:auto"><b>{point.key}</b></span><table>',
+          pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+            '<td style="padding:0"><b>$ {point.y:.2f}</b></td></tr>',
+          footerFormat: '</table>',
+          shared: true,
+          useHTML: true,
+          borderRadius: 30,
+        },
+        plotOptions: {
+          series: {
+            cursor: 'pointer',
+            allowPointSelect: true,
+            states: { select: { color: null, borderWidth: 2, borderColor: '#000000' } },
+            dataLabels: {
+              enabled: true,
+              format: `$ {point.y:.2f}`
             },
-            title: {
-              text: '<span style="color:black;">Amount($)<span>',
-            },
-          },
-          legend: {
-            enabled: false,
-          },
-          tooltip: {
-            headerFormat: '<span style="font-size:16px; margin:auto"><b>{point.key}</b></span><table>',
-            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-              '<td style="padding:0"><b>$ {point.y:.2f}</b></td></tr>',
-            footerFormat: '</table>',
-            shared: true,
-            useHTML: true
-          },
-          plotOptions: {
-            series: {
-              cursor: 'pointer',
-              point: {
-                events: {
-                  click: function (event) {
-                    if (event && event.point && event.point.year && event.point.code) {
-                      componentScope.getOfficeMonthWiseAmountBasedOnYear(this.param, event.point.year, event.point.code);
-                    } else {
-                      alert('Point is not present in Chart')
-                    }
-                  }
+            point: {
+              events: {
+                click: function (event) {
+                  componentScope.getMonOffChartBasedOnCom(this.param, event.point.year, event.point.code, event.point.mcode);
                 }
               }
             }
-          },
-          series: [{
-            name: `<b>Amount</b>`,
-            data: chartsData,
-            color: '#003BFF'
-          }],
-        }
-      })
+          }
+        },
+        series: [{
+          name: `<b>Amount</b>`,
+          data: chartsValue,
+          color: '#F16230'
+        }],
+      }
+    })
   }
-  //Month wise office chart amount based on year and company
-  getOfficeMonthWiseAmountBasedOnYear(param: ChartsData, year: number, code: number, selected?: any) {
+
+  getMonOffChartBasedOnCom(param: ChartsData, year: number, code: number, mcode?: number) {
     var param = new ChartsData();
-    param.code = code;
     param.year = year;
-    this.chartService
-      .getOfficeData(param).
-      subscribe((result: ChartsData[]) => {
-        this.result = result;
-        let chartsData = [];
-        //get chart values
-        this.result.forEach((r) => {
-          //get X and Y values
-          chartsData.push({
-            name: r.month,
-            y: r.amount,
-            office: r.office
-          });
-        });
-        const chartTitle = selected && selected.point ? selected.point.name : this.result.slice(-1)[0].office;
-        // Column Chart
-        this.officeMonthChartOptions = {
-          chart: {
-            type: "column"
-          },
-          events: {},
-          title: {
-            text: `Month Wise Amount for <b>${chartTitle}</b> Company in <b>${year}</b> `
-          },
-          xAxis: {
-            type: 'category',
-            labels: {
-              style: {
-                color: 'black',
-              }
+    param.code = code;
+    param.mcode = mcode;
+    this.chartService.getCompanyData(param).subscribe((result: ChartsData[]) => {
+      this.result = result;
+      let chartsValue = [];
+      this.result.forEach((r) => {
+        chartsValue.push({
+          name: r.office,
+          y: r.amount
+        })
+
+        if (year && code && mcode) {
+          this.offChartOptions = {
+            chart: {
+              type: "area",
+              borderRadius: 10
             },
-          },
-          yAxis: {
-            labels: {
-              style: {
-                color: 'black',
-              }
-            },
+            events: {},
             title: {
-              text: '<span style="color:black;">Amount ($)<span>',
+              text: ''
             },
-          },
-          legend: {
-            enabled: false,
-          },
-          tooltip: {
-            headerFormat: `<span style="font-size:16px; margin:auto"><b>{point.key}</b></span><table>`,
-            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-              '<td style="padding:0"><b>$ {point.y:.2f}</b></td></tr>',
-            footerFormat: '</table>',
-            shared: true,
-            useHTML: true
-          },
-          plotOptions: {
-            column: {
-              cursor: 'pointer',
-              point: {
-                events: {}
+            xAxis: {
+              type: 'category',
+              labels: {
+                style: {
+                  color: 'black',
+                },
+                formatter: function () {
+                  return typeof this.value !== 'number' ? this.value : ''
+                }
+              },
+              title: {
+                text: '<span style="color:black;">Office<span>',
+              },
+            },
+            yAxis: {
+              labels: {
+                style: {
+                  color: 'black',
+                }
+              },
+              title: {
+                text: '<span style="color:black;">Amount($)<span>',
+              },
+            },
+            legend: {
+              enabled: false,
+            },
+            credits: {
+              enabled: false,
+            },
+            tooltip: {
+              headerFormat: '<span style="font-size:16px; margin:auto"><b>{point.key}</b></span><table>',
+              pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                '<td style="padding:0"><b>$ {point.y:.2f}</b></td></tr>',
+              footerFormat: '</table>',
+              shared: true,
+              useHTML: true,
+              borderRadius: 30,
+            },
+            plotOptions: {
+              series: {
+                cursor: 'pointer',
+                allowPointSelect: true,
+                states: { select: { color: null, borderWidth: 2, borderColor: '#000000' } },
+                dataLabels: {
+                  enabled: true,
+                  format: `$ {point.y:.2f}`
+                },
+                point: {
+                  events: {
+                  }
+                }
               }
-            }
-          },
-          series: [{
-            name: `<b>Amount</b>`,
-            data: chartsData,
-            color: '#FF6A00'
-          }],
+            },
+            // scrollbar: {
+            //   enabled: true,
+            //   liveRedraw: false
+            // },
+            // navigator: {
+            //   enabled: true,
+            //   width:120,
+            //   outlineWidth: 0,
+            //   backgroundColor: '##000000',
+            //   maskFill: '#F16230',
+            //   handles: {
+            //     backgroundColor: '##000000',
+            //     borderColor: '#777',
+            //     borderRadius:5,
+            //     symbols: [
+            //       'customarrow',
+            //       'customcircle'
+            //     ]
+            //   },
+            // },
+            series: [{
+              name: `<b>Amount</b>`,
+              data: chartsValue,
+              color: '#F16230',
+              max: 10,
+            }],
+
+          }
         }
       })
+    })
   }
+
 }
