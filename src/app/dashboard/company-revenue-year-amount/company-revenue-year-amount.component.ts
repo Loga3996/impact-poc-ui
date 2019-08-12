@@ -29,11 +29,12 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
   yearValue: number;
   companyValue: any;
   year: number;
-  code: number
+  code: number;
   selected = this.yearValue;
 
   chartOptions: any;
   offChartOptions: any;
+  loading: boolean;
 
   constructor(
     public fb: FormBuilder,
@@ -43,11 +44,12 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
   ngOnInit() {
     this.formGroup = this.fb.group({
       year: this.getYearSelectOptions(this.param),
-      company: this.getCompanySelectOptions(this.param, this.year)
+      company: this.getCompanySelectOptions(this.param, this.year),
     });
     this.formGroup.controls['year'].valueChanges.subscribe((yearValue) => {
       this.getCompanySelectOptions(this.param, yearValue);
       this.companyValue = "Select Company";
+      this.getYearOrYearCompanyChart(this.param, yearValue);
     })
     this.formGroup.controls['company'].valueChanges.subscribe((companyValue) => {
       const year = this.formGroup.controls['year'].value;
@@ -57,18 +59,20 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
 
   // Get Year Select Options 
   getYearSelectOptions(param: ChartsData) {
+    this.loading = true;
     var param = new ChartsData()
     this.chartService.getSelectData(param)
       .subscribe((result: ChartsData[]) => {
+        this.loading = false;
         this.result = result;
         this.result.forEach((r) => {
           this.selectYearOptions.push({
             selectYearValue: r.year,
           })
-          this.yearValue = this.selectYearOptions.slice(-1)[0].selectYearValue; 
+          this.yearValue = this.selectYearOptions.slice(-1)[0].selectYearValue;
         });
-        this.getCompanySelectOptions(this.param, this.yearValue);
       })
+     
   }
 
   // Get Company select options based on selected year
@@ -86,7 +90,6 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
           })
           this.selectCompanyOptions = companyValue;
         });
-        this.getYearOrYearCompanyChart(this.param, year);
       })
   }
 
@@ -108,7 +111,8 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
           mcode: r.mcode,
         })
       })
-      this.getMonOffChartBasedOnCom(this.param, chartsValue.slice(-1)[0].year, chartsValue.slice(-1)[0].code, chartsValue.slice(-1)[0].mcode);
+      this.getMonOffChartBasedOnCom(this.param,year,code, chartsValue.slice(-1)[0].mcode);
+   
       this.chartOptions = {
         chart: {
           type: "column",
@@ -133,6 +137,10 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
           labels: {
             style: {
               color: 'black',
+            },
+            formatter: function () {
+              if (this.value > 1000) return Highcharts.numberFormat(this.value / 1000, 1) + "K";  // maybe only switch if > 1000
+              return Highcharts.numberFormat(this.value, 0);
             }
           },
           title: {
@@ -221,6 +229,10 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
             },
             yAxis: {
               labels: {
+                // formatter: function() {
+                //   if ( this.value >= 100 ) return Highcharts.numberFormat( this.value/100, 0);  // maybe only switch if > 1000
+                //   return Highcharts.numberFormat(this.value,0);
+                // } ,
                 style: {
                   color: 'black',
                 }
