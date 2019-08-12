@@ -1,7 +1,7 @@
 <!-- Order Revenue Chart -->
-<mat-toolbar  fxLayoutGap='20px'>Orders Amount Report</mat-toolbar>
+<mat-toolbar class="toolbar"><b>Orders Amount Report</b></mat-toolbar>
 <div fxLayout="row" fxLayoutAlign="center center" class = 'spinner' *ngIf="loading else loaded">
-  <mat-spinner mode="indeterminate" color="accent"></mat-spinner>
+  <mat-spinner mode="indeterminate"></mat-spinner>
 </div>
 <div fxLayout='row'*ngIf="!loading else loaded"  fxLayoutGap="10px">
   <highcharts-chart
