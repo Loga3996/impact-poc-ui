@@ -9,4 +9,7 @@ export class ChartsData {
   butt: number;
   number: number;
   code: number;
+  months: string;
+  offcode: number;
+  mcode: number;
 }
