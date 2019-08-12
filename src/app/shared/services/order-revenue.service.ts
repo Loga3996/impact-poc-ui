@@ -11,16 +11,16 @@ export class OrderRevenueService {
 
   constructor(private httpClient: HttpClient) { }
 
-  getData(param: ChartsData): Observable<any> {
-    return this.httpClient.post(environment.YEAR_BACKEND_URL, param);
-  }
-
   getCompanyData(param: ChartsData): Observable<any> {
-    return this.httpClient.post(environment.COMPANY_BACKEND_URL, param);
+    return this.httpClient.post(environment.CART_BACKEND_URL, param);
   }
 
-  getOfficeData(param: ChartsData): Observable<any> {
-    return this.httpClient.post(environment.OFFICE_BACKEND_URL, param);
+  getSelectData(param: ChartsData): Observable<any> {
+    return this.httpClient.post(environment.YM_BACKEND_URL, param);
   }
+
+  // getOfficeData(param: ChartsData): Observable<any> {
+  //   return this.httpClient.post(environment.OFFICE_BACKEND_URL, param);
+  // }
 
 }
