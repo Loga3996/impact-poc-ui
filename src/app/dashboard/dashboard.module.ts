@@ -7,6 +7,7 @@ import { DashboardRoutingModule } from './dashboard.routing.module';
 import { HeaderComponent } from '../shared/header/header.component';
 import { MaterialModule } from '../shared/material/material.module';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { DashboardComponent } from './dashboard.component';
 import { OrderRevenueReportComponent } from './order-revenue-report/order-revenue-report.component';
 import { CompanyRevenueReportComponent } from './company-revenue-report/company-revenue-report.component';
@@ -26,7 +27,9 @@ import { CompanyRevenueYearAmountComponent } from './company-revenue-year-amount
     DashboardRoutingModule,
     MaterialModule,
     FlexLayoutModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule,
+    ReactiveFormsModule
   ]
 })
 export class DashboardModule { }
