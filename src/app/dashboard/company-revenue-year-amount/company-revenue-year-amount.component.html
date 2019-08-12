@@ -1,45 +1,38 @@
 <!-- Toolbar -->
-<mat-toolbar fxLayout="row" fxLayoutAlign="center center">
-  <span fxFlex="70%">Year Wise Amount Detail</span>
+<mat-toolbar fxLayout="row" fxLayoutAlign="center center" class="toolbar">
+  <span fxFlex="50"><b>Year Wise Amount Detail</b></span>
   <!-- Year Selection Field -->
-  <mat-form-field fxLayout="column" appearance="outline" fxFlex="30%">
-    <mat-label class='text-center'>Select Year</mat-label>
-    <mat-select [(value)]="selectValue" (selectionChange)="onSelect($event)">
-      <mat-option *ngFor="let year of selectOptions" [value]="year.selectYearOptions">
-        {{year.selectYearOptions}}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
+  <form [formGroup]="formGroup" fxLayout="row" fxFlex>
+    <mat-form-field appearance="outline" fxFlex=40>
+      <mat-label class='text-center'>Select Year</mat-label>
+      <mat-select [(ngModel)]="yearValue" formControlName="year">
+        <mat-option *ngFor="let year of selectYearOptions" [value]="year.selectYearValue">
+          {{year.selectYearValue|| "Select Year"}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" fxFlex=60>
+      <mat-label class='text-center'>Select Company</mat-label>
+      <mat-select [(ngModel)]="companyValue" formControlName="company">
+        <mat-option *ngFor="let company of selectCompanyOptions" [value]="company.selectCompanyValue">
+          {{company.selectCompanyName}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
 </mat-toolbar>
 <div fxLayout="row" fxLayoutAlign="center center" class='spinner' *ngIf="loading else loaded">
-  <mat-spinner mode="indeterminate" color="accent"></mat-spinner>
+  <mat-spinner mode="indeterminate"></mat-spinner>
 </div>
 <!-- Charts -->
-<div *ngIf="!loading else loaded">
+<div fxLayout='column' fxLayoutGap="10px" *ngIf="!loading else loaded">
   <!-- Year Wise Company & Office Charts -->
-  <div fxLayout='row' fxLayoutGap="10px">
-    <highcharts-chart 
-      [Highcharts]="highcharts" 
-      [options]="companyChartOptions"
-      style="width: 100%; height: 300px; display: block;">
-    </highcharts-chart>
-    <highcharts-chart 
-      [Highcharts]="highcharts" 
-      [options]="officeChartOptions"
-      style="width: 100%; height: 300px; display: block;">
-    </highcharts-chart>
-  </div>
-  <!-- Month Wise Company & Office Charts -->
-  <div fxLayout='row' fxLayoutGap="10px" class='margin-top20px'>
-    <highcharts-chart 
-      [Highcharts]="highcharts" 
-      [options]="companyMonthChartOptions"
-      style="width: 100%; height: 300px; display: block;">
-    </highcharts-chart>
-    <highcharts-chart 
-      [Highcharts]="highcharts" 
-      [options]="officeMonthChartOptions"
-      style="width: 100%; height: 300px; display: block;">
+  <highcharts-chart id="company" [Highcharts]="highcharts" [options]="chartOptions"
+    style="width: 100%; height: 400px; display: block;">
+  </highcharts-chart>
+  <div class="scroll">
+    <highcharts-chart id="container" [Highcharts]="highcharts" [options]="offChartOptions" [ngModel]="offChart"
+      style=" width:120%; height: 400px; display: block;">
     </highcharts-chart>
   </div>
 </div>
