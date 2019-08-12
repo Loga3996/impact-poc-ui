@@ -19,11 +19,7 @@ mat-toolbar {
   padding-bottom: 0.1em;
 }
 
-//  :host /deep/ .mat-select-value-text {
-//   color:#F16230 !important;
-//   font-style: bold !important;
-// } 
-// .scroll{
-//     width: 100%;
-//   overflow-x :scroll;
-// }
+ :host /deep/ .mat-select-value-text {
+  color:#F16230 !important;
+  font-style: bold !important;
+} 
