@@ -22,7 +22,7 @@ export class OrderRevenueReportComponent implements OnInit {
    clickOptions = [];
    clickOptionsValue: any;
    year: number;
-   loading:boolean;
+   loading: boolean;
    constructor(private orderService: OrderRevenueService) { }
 
    ngOnInit() {
@@ -30,28 +30,29 @@ export class OrderRevenueReportComponent implements OnInit {
    }
    //Orders Amount Chart
    getOrderChart(param: ChartsData) {
-      this.loading=true;
+      this.loading = true;
       var param = new ChartsData();
       let componentScope = this;
-      this.orderService.getData(param).subscribe((result: ChartsData[]) => {
+      this.orderService.getCompanyData(param).subscribe((result: ChartsData[]) => {
          this.result = result;
          let chartsData = [];
          this.result.forEach((r) => {
             //get chart values
             chartsData.push({
-              x: r.date,
-              y: r.amount,
+               x: r.date,
+               y: r.amount,
             });
             this.clickOptions.push({
-              clickYearValue: r.date,
+               clickYearValue: r.date,
             });
             this.getMonthChart(param, this.clickOptions.slice(-1)[0].clickYearValue);
-          });
-         this.loading=false;
+         });
+         this.loading = false;
          // Chart Options
          this.yearChartOptions = {
             chart: {
                type: "column",
+               borderRadius:10
             },
             events: {},
             title: {
@@ -87,11 +88,18 @@ export class OrderRevenueReportComponent implements OnInit {
                   '<td style="padding:0"><b>$ {point.y:.2f}</b></td></tr>',
                footerFormat: '</table>',
                shared: true,
-               useHTML: true
+               useHTML: true,
+               borderRadius: 30,
             },
             plotOptions: {
-               column: {
+               series: {
                   cursor: 'pointer',
+                  allowPointSelect: true,
+                  states: { select: { color: null, borderWidth: 2, borderColor: '#000000' } },
+                  dataLabels: {
+                     enabled: true,
+                     format:`$ {point.y:.2f}`
+                  },
                   point: {
                      events: {
                         click: function (event) {
@@ -109,7 +117,7 @@ export class OrderRevenueReportComponent implements OnInit {
             series: [{
                name: `<b>Amount</b>`,
                data: chartsData,
-               color: '#003BFF'
+               color: '#ff6300'
             }],
          }
       })
@@ -118,13 +126,13 @@ export class OrderRevenueReportComponent implements OnInit {
    getMonthChart(param: ChartsData, year: number) {
       var param = new ChartsData();
       param.year = year;
-      this.orderService.getData(param).subscribe((result: ChartsData[]) => {
+      this.orderService.getCompanyData(param).subscribe((result: ChartsData[]) => {
          this.result = result;
          let chartsData = [];
          //get chart values
          for (var i = 0; i < this.result.length; i++) {
             chartsData.push({
-               name: this.result[i].month,
+               name: this.result[i].months,
                y: this.result[i].amount,
             })
          }
@@ -132,6 +140,7 @@ export class OrderRevenueReportComponent implements OnInit {
          this.monthChartOptions = {
             chart: {
                type: "column",
+               borderRadius:10
             },
             events: {},
             title: {
@@ -167,11 +176,16 @@ export class OrderRevenueReportComponent implements OnInit {
                   '<td style="padding:0"><b>$ {point.y:.2f}</b></td></tr>',
                footerFormat: '</table>',
                shared: true,
-               useHTML: true
+               useHTML: true,
+               borderRadius: 30,
             },
             plotOptions: {
                column: {
                   cursor: 'pointer',
+                  dataLabels: {
+                     enabled: true,
+                     format:`$ {point.y:.2f}`
+                  },
                   point: {
                      events: {}
                   }
@@ -180,7 +194,7 @@ export class OrderRevenueReportComponent implements OnInit {
             series: [{
                name: `<b>Amount</b>`,
                data: chartsData,
-               color: '#FF6A00'
+               color: '#ff6300'
             }],
          }
       })
