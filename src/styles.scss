@@ -9,11 +9,13 @@ body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
   background: #030303;
 }
-.margin-top20px {
-  margin-top: 20px;
-}
 .spinner {
   width: 100%;
   height: 300px;
   display: block;
 }
+.toolbar {
+  background: #fff !important;
+  margin: 10px 0px 10px 0px !important
+}
+
