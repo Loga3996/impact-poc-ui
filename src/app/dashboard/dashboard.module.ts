@@ -29,7 +29,7 @@ import { CompanyRevenueYearAmountComponent } from './company-revenue-year-amount
     FlexLayoutModule,
     HttpClientModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule.withConfig({warnOnNgModelWithFormControl: 'never'})
   ]
 })
 export class DashboardModule { }
