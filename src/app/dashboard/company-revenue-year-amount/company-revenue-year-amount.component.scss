@@ -1,14 +1,16 @@
 mat-toolbar {
-  background:#D3D3D3;
+  background: #d3d3d3;
   font-size: 16pt;
   font-display: bold;
   padding: 5px;
 }
-
+.company-select {
+  width:70% !important;
+}
 ::ng-deep .mat-form-field-appearance-outline {
   display: inline-block !important;
   font-size: 14px;
-  padding: 100px;
+  padding: 10px;
   color: #020202 !important;
   font-style: bold !important;
 }
@@ -16,3 +18,12 @@ mat-toolbar {
 ::ng-deep .mat-form-field-wrapper {
   padding-bottom: 0.1em;
 }
+
+//  :host /deep/ .mat-select-value-text {
+//   color:#F16230 !important;
+//   font-style: bold !important;
+// } 
+// .scroll{
+//     width: 100%;
+//   overflow-x :scroll;
+// }
