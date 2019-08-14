@@ -4,7 +4,10 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 //HighCharts Import
 import * as Highcharts from 'highcharts/highstock';
 import * as HC_customEvents from 'highcharts-custom-events';
-
+import HighchartsMore from "highcharts/highcharts-more";
+import HighchartsExporting from "highcharts/modules/exporting";
+HighchartsMore(Highcharts);
+HighchartsExporting(Highcharts);
 HC_customEvents(Highcharts);
 //Models
 import { ChartsData } from 'src/app/shared/models/chart-data';
@@ -72,7 +75,6 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
           this.yearValue = this.selectYearOptions.slice(-1)[0].selectYearValue;
         });
       })
-     
   }
 
   // Get Company select options based on selected year
@@ -111,8 +113,8 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
           mcode: r.mcode,
         })
       })
-      this.getMonOffChartBasedOnCom(this.param,year,code, chartsValue.slice(-1)[0].mcode);
-   
+      this.getMonOffChartBasedOnCom(this.param, year, code, chartsValue.slice(-1)[0].mcode);
+      //Chart Options
       this.chartOptions = {
         chart: {
           type: "column",
@@ -183,7 +185,7 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
         series: [{
           name: `<b>Amount</b>`,
           data: chartsValue,
-          color: '#F16230'
+          color: '#F16230',
         }],
       }
     })
@@ -202,7 +204,7 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
           name: r.office,
           y: r.amount
         })
-
+        //chart options
         if (year && code && mcode) {
           this.offChartOptions = {
             chart: {
@@ -265,6 +267,12 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
                   enabled: true,
                   format: `$ {point.y:.2f}`
                 },
+                marker: {
+                  enabled: true,
+                  symbol: 'diamond',
+                  radius: 8,
+                  states: { hover: { radius: 12 } }
+                },
                 point: {
                   events: {
                   }
@@ -277,14 +285,14 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
             // },
             // navigator: {
             //   enabled: true,
-            //   width:120,
+            //   // width: 120,
             //   outlineWidth: 0,
             //   backgroundColor: '##000000',
             //   maskFill: '#F16230',
             //   handles: {
             //     backgroundColor: '##000000',
             //     borderColor: '#777',
-            //     borderRadius:5,
+            //     borderRadius: 5,
             //     symbols: [
             //       'customarrow',
             //       'customcircle'
@@ -295,13 +303,10 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
               name: `<b>Amount</b>`,
               data: chartsValue,
               color: '#F16230',
-              max: 10,
             }],
-
           }
         }
       })
     })
   }
-
 }
