@@ -1,4 +1,13 @@
-<div fxLayout="column" fxLayoutAlign="space-between none">
-    <app-header></app-header>
+<div #content id="content">
+    <mat-toolbar fxLayout="row">
+        <div fxLayout="column" fxLayoutAlign="start center" fxFlex="25">
+            <a class="navbar-brand" href="index.html">
+                <img src="assets/images/logo-black.png" alt="homepage" class="light-logo">
+            </a>
+        </div>
+        <div fxLayout="column" fxLayoutAlign="end end" fxFlex="75">
+            <button mat-raised-button class="button" (click)="downloadPdf()">Download PDF</button>
+        </div>
+    </mat-toolbar>
     <app-company-revenue-year-amount></app-company-revenue-year-amount>
 </div>
