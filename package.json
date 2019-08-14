@@ -27,7 +27,9 @@
     "highcharts": "^7.1.2",
     "highcharts-angular": "^2.4.0",
     "highcharts-custom-events": "^2.2.2",
+    "html2canvas": "^1.0.0-rc.3",
     "http": "0.0.0",
+    "jspdf": "^1.5.3",
     "rxjs": "~6.3.3",
     "tslib": "^1.9.0",
     "zone.js": "~0.8.26"
