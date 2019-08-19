@@ -5,7 +5,7 @@ mat-toolbar {
   padding: 5px;
 }
 .company-select {
-  width:70% !important;
+  width: 70% !important;
 }
 ::ng-deep .mat-form-field-appearance-outline {
   display: inline-block !important;
@@ -19,7 +19,7 @@ mat-toolbar {
   padding-bottom: 0.1em;
 }
 
- :host /deep/ .mat-select-value-text {
-  color:#F16230 !important;
+:host /deep/ .mat-select-value-text {
+  color: #f16230 !important;
   font-style: bold !important;
-} 
+}

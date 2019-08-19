@@ -29,10 +29,10 @@
 <!-- Charts -->
 <div fxLayout='column' fxLayoutGap="10px" *ngIf="!loading else loaded">
   <!-- Year Wise Company & Office Charts -->
-  <highcharts-chart id="company" [Highcharts]="highcharts" [options]="chartOptions"
+  <highcharts-chart id="company" [Highcharts]="highcharts" [options]="companyChartOptions"
     style="width: 100%; height: 400px; display: block;">
   </highcharts-chart>
-  <highcharts-chart id="container" [Highcharts]="highcharts" [options]="offChartOptions"
+  <highcharts-chart id="office" [Highcharts]="highcharts" [options]="officeChartOptions"
     style=" width:100%; height: 400px; display: block;">
   </highcharts-chart>
 </div>
