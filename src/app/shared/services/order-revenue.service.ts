@@ -12,10 +12,10 @@ export class OrderRevenueService {
   constructor(private httpClient: HttpClient) { }
 
   getCompanyData(param: ChartsData): Observable<any> {
-    return this.httpClient.post(environment.CART_BACKEND_URL, param);
+    return this.httpClient.post(environment.CART_AMOUNT_URL, param);
+  }
+  getBillData(param: ChartsData): Observable<any> {
+    return this.httpClient.post(environment.CART_BILL_URL, param);
   }
 
-  getSelectData(param: ChartsData): Observable<any> {
-    return this.httpClient.post(environment.YM_BACKEND_URL, param);
-  }
 }

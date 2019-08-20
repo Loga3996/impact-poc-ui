@@ -7,9 +7,8 @@ export const environment = {
   production: false,
 
   // backend info
-  CART_BACKEND_URL: 'http://localhost:7000/cart-orders/Cart_Orders',
-  YM_BACKEND_URL: 'http://localhost:7000/cart-orders/Ym',
-  // OFFICE_BACKEND_URL: 'http://localhost:7000/cart-orders/Office',
+  CART_AMOUNT_URL: 'http://localhost:7000/cart-orders/Cart_Orders_Amount',
+  CART_BILL_URL: 'http://localhost:7000/cart-orders/Cart_Orders_Bill',
 
 };
 
