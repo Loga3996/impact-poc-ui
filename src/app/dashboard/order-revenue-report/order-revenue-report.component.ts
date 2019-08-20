@@ -1,10 +1,10 @@
-//Angular core
+// Angular core
 import { Component, OnInit } from '@angular/core';
-//import Highchart
+// import Highchart
 import * as Highcharts from 'highcharts';
-//Services
+// Services
 import { OrderRevenueService } from 'src/app/shared/services/order-revenue.service';
-//Models
+// Models
 import { ChartsData } from 'src/app/shared/models/chart-data';
 
 @Component({
@@ -28,16 +28,16 @@ export class OrderRevenueReportComponent implements OnInit {
    ngOnInit() {
       this.getOrderChart(this.param);
    }
-   //Orders Amount Chart
+   // Orders Amount Chart
    getOrderChart(param: ChartsData) {
       this.loading = true;
-      var param = new ChartsData();
-      let componentScope = this;
+      // const param = new ChartsData();
+      const componentScope = this;
       this.orderService.getCompanyData(param).subscribe((result: ChartsData[]) => {
          this.result = result;
-         let chartsData = [];
+         const chartsData = [];
          this.result.forEach((r) => {
-            //get chart values
+            // get chart values
             chartsData.push({
                x: r.date,
                y: r.amount,
@@ -51,12 +51,12 @@ export class OrderRevenueReportComponent implements OnInit {
          // Chart Options
          this.yearChartOptions = {
             chart: {
-               type: "column",
-               borderRadius:10
+               type: 'column',
+               borderRadius: 10
             },
             events: {},
             title: {
-               text: "Year Wise Amount"
+               text: 'Year Wise Amount'
             },
             xAxis: {
                type: 'date',
@@ -98,15 +98,15 @@ export class OrderRevenueReportComponent implements OnInit {
                   states: { select: { color: null, borderWidth: 2, borderColor: '#000000' } },
                   dataLabels: {
                      enabled: true,
-                     format:`$ {point.y:.2f}`
+                     format: `$ {point.y:.2f}`
                   },
                   point: {
                      events: {
-                        click: function (event) {
+                        click(event) {
                            if (event && event.point && event.point.x) {
                               componentScope.getMonthChart(this.param, event.point.x);
                            } else {
-                              alert('Point is not present in Chart')
+                              alert('Point is not present in Chart');
                            }
                         }
 
@@ -119,28 +119,28 @@ export class OrderRevenueReportComponent implements OnInit {
                data: chartsData,
                color: '#ff6300'
             }],
-         }
-      })
+         };
+      });
    }
-   //Month Wise Chart
+   // Month Wise Chart
    getMonthChart(param: ChartsData, year: number) {
-      var param = new ChartsData();
+      // const param = new ChartsData();
       param.year = year;
       this.orderService.getCompanyData(param).subscribe((result: ChartsData[]) => {
          this.result = result;
-         let chartsData = [];
-         //get chart values
-         for (var i = 0; i < this.result.length; i++) {
+         const chartsData = [];
+         // get chart values
+         this.result.forEach((r) => {
             chartsData.push({
-               name: this.result[i].months,
-               y: this.result[i].amount,
-            })
-         }
-         //chart Options
+               name: r.months,
+               y: r.amount,
+            });
+         });
+         // chart Options
          this.monthChartOptions = {
             chart: {
-               type: "column",
-               borderRadius:10
+               type: 'column',
+               borderRadius: 10
             },
             events: {},
             title: {
@@ -184,7 +184,7 @@ export class OrderRevenueReportComponent implements OnInit {
                   cursor: 'pointer',
                   dataLabels: {
                      enabled: true,
-                     format:`$ {point.y:.2f}`
+                     format: `$ {point.y:.2f}`
                   },
                   point: {
                      events: {}
@@ -196,7 +196,7 @@ export class OrderRevenueReportComponent implements OnInit {
                data: chartsData,
                color: '#ff6300'
             }],
-         }
-      })
+         };
+      });
    }
 }

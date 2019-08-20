@@ -1,21 +1,20 @@
-//Angular Imports
+// Angular Imports
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 
-//HighCharts Imports
+// HighCharts Imports
 import * as Highcharts from 'highcharts/highstock';
-import HighchartsMore from "highcharts/highcharts-more";
-import HighchartsExporting from "highcharts/modules/exporting";
+import HighchartsMore from 'highcharts/highcharts-more';
+import HighchartsExporting from 'highcharts/modules/exporting';
 import noData from 'highcharts/modules/no-data-to-display';
-
-noData(Highcharts)
+noData(Highcharts);
 HighchartsMore(Highcharts);
 HighchartsExporting(Highcharts);
 
-//Models
+// Models
 import { ChartsData } from 'src/app/shared/models/chart-data';
 
-//Services
+// Services
 import { OrderRevenueService } from 'src/app/shared/services/order-revenue.service';
 
 @Component({
@@ -40,10 +39,10 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
   loading: boolean;
   selected = this.yearValue;
 
-  //Chart Options
+  // Chart Options
   companyChartOptions: any = {
     chart: {
-      type: "column",
+      type: 'column',
       borderRadius: 10,
     },
     events: {},
@@ -59,7 +58,7 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
       },
       title: {
         useHTML: true,
-        text: '<span style="color:black;"><b>Months</b><span>',
+        text: `<span style="color:black;"><b>Months</b><span>`,
       },
     },
     yAxis: {
@@ -67,10 +66,6 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
         style: {
           color: 'black',
         },
-        formatter: function () {
-          if (this.value > 1000) return Highcharts.numberFormat(this.value / 1000, 1) + "K";  // maybe only switch if > 1000
-          return Highcharts.numberFormat(this.value, 0);
-        }
       },
       title: {
         useHTML: true,
@@ -104,16 +99,30 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
         point: {
           events: {
             click: (event) => {
-              this.getMonOffChartBasedOnCom(this.param, event.point.year, event.point.code, event.point.mcode);
+              this.getMonOffChartBasedOnCom(event.point.year, event.point.code, event.point.mcode);
             }
           }
         }
       }
     },
     exporting: {
+      buttons: {
+        contextButton: {
+          symbol: 'circle',
+          text: `<b>PDF</b>`,
+          symbolFill: '#F16230',
+          menuItems: null,
+          onclick() {
+            this.exportChart({
+              type: 'application/pdf',
+              filename: this.title.textStr
+            });
+          }
+        }
+      },
       sourceWidth: 1200,
       sourceHeight: 800,
-      scale: 2
+      scale: 2,
     },
     series: [{
       name: `<b>Amount</b>`,
@@ -121,12 +130,14 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
       color: '#F16230',
     }],
   };
-
   // Chart Options
   officeChartOptions: any = {
     chart: {
-      type: "column",
+      type: 'column',
       borderRadius: 10,
+    },
+    lang: {
+      noData: `<span style="font-size:16px;color:black;">No data available.\n Please Select Company and Month<span>`
     },
     events: {},
     title: {
@@ -188,19 +199,31 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
     exporting: {
       sourceWidth: 1200,
       sourceHeight: 800,
-      scale: 2
+      scale: 2,
+      buttons: {
+        contextButton: {
+          symbol: 'circle',
+          text: `<b>PDF</b>`,
+          symbolFill: '#F16230',
+          menuItems: null,
+          onclick() {
+            this.exportChart({
+              type: 'application/pdf',
+              filename: this.title.textStr
+            });
+          }
+        }
+      },
     },
     navigator: {
       enabled: true,
       margin: 0,
       height: 12,
-      outlineColor: '#F16230',
-      outlineWidth: 2,
       maskFill: '#F16230',
+      maskWidth: 300,
       series: {
         name: 'navigator',
         lineWidth: 0,
-
         marker: {
           enabled: false,
         },
@@ -232,66 +255,71 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
 
   ngOnInit() {
     this.formGroup = this.fb.group({
-      year: this.getYearSelectOptions(this.param),
-      company: this.getCompanySelectOptions(this.param, this.year),
+      year: this.getYearSelectOptions(),
+      company: this.getCompanySelectOptions(this.year),
     });
-    this.formGroup.controls['year'].valueChanges.subscribe((yearValue) => {
-      this.getCompanySelectOptions(this.param, yearValue);
-      this.getYearOrYearCompanyChart(this.param, yearValue);
+    const years = 'year';
+    this.formGroup.controls[years].valueChanges.subscribe((yearValue) => {
+      this.getCompanySelectOptions(yearValue);
+      this.getYearOrYearCompanyChart(yearValue);
       this.companyValue = 0;
-    })
-    this.formGroup.controls['company'].valueChanges.subscribe((companyValue) => {
-      const year = this.formGroup.controls['year'].value;
-      this.getYearOrYearCompanyChart(this.param, year, companyValue);
-    })
+
+    });
+    const company = 'company';
+    this.formGroup.controls[company].valueChanges.subscribe((companyValue) => {
+      const year = this.formGroup.controls.year.value;
+      this.getYearOrYearCompanyChart(year, companyValue);
+      this.getMonOffChartBasedOnCom(year, companyValue);
+    });
   }
 
-  // Get Year Select Options 
-  getYearSelectOptions(param: ChartsData) {
+  // Get Year Select Options
+  getYearSelectOptions() {
     this.loading = true;
-    var param = new ChartsData()
+    const param = new ChartsData();
     this.chartService.getSelectData(param)
+      .pipe()
       .subscribe((result: ChartsData[]) => {
         this.loading = false;
         this.result = result;
         this.result.forEach((r) => {
           this.selectYearOptions.push({
             selectYearValue: r.year,
-          })
+          });
           this.yearValue = this.selectYearOptions.slice(-1)[0].selectYearValue;
         });
-      })
+      });
   }
 
   // Get Company select options based on selected year
-  getCompanySelectOptions(param: ChartsData, year: number) {
-    var param = new ChartsData();
+  getCompanySelectOptions(year: number) {
+    const param = new ChartsData();
     param.year = year;
     this.chartService.getSelectData(param)
-      .subscribe((result) => {
+      .pipe()
+      .subscribe((result: ChartsData[]) => {
         this.result = result;
-        let companyValue = [];
+        const companyValue = [];
         this.result.forEach((r) => {
           companyValue.push({
             selectCompanyName: r.company,
             selectCompanyValue: r.code,
-          })
+          });
           this.selectCompanyOptions = companyValue;
         });
-      })
+      });
   }
 
-  //Get Year or Year & Company Month wise Chart based on params
-  getYearOrYearCompanyChart(param: ChartsData, year: number, code?: number) {
-    var param = new ChartsData();
+  // Get Year or Year & Company Month wise Chart based on params
+  getYearOrYearCompanyChart(year: number, code?: number, selected?: any) {
+    const param = new ChartsData();
     param.year = year;
     param.code = code;
-    this.chartService
-      .getCompanyData(param)
+    this.chartService.getCompanyData(param)
+      .pipe()
       .subscribe((result: ChartsData[]) => {
         this.result = result;
-        let chartsValue = [];
-        let monthcodeValue = [];
+        const chartsValue = [];
         this.result.forEach((r) => {
           chartsValue.push({
             name: r.months,
@@ -299,36 +327,44 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
             year: r.year,
             code: r.code,
             mcode: r.mcode,
-          })
-          monthcodeValue.push({
-            mcode: r.mcode,
-          })
-        })
-        //Chart
-        this.companyChartOptions.series[0]['data'] = chartsValue;
+            company: r.company
+          });
+        });
+        const chartTitle = selected && selected.point ? selected.point.name : this.result[0].company;
+        // Chart
+        this.companyChartOptions.series[0].data = chartsValue;
+        if (year && code) {
+          this.companyChartOptions.title.text = `Monthwise Revenue for ${year} and ${chartTitle}`;
+        } else {
+          this.companyChartOptions.title.text = `Monthwise Revenue for ${year}`;
+        }
         Highcharts.chart('company', this.companyChartOptions);
-      })
+      });
   }
-  //Get Office Month wise Chart based on params
-  getMonOffChartBasedOnCom(param: ChartsData, year: number, code: number, mcode: number) {
-    var param = new ChartsData();
+  // Get Office Month wise Chart based on params
+  getMonOffChartBasedOnCom(year: number, code: number, mcode?: number, selected?: any) {
+    const param = new ChartsData();
     param.year = year;
     param.code = code;
     param.mcode = mcode;
-    this.chartService
-      .getCompanyData(param)
+    this.chartService.getCompanyData(param)
+      .pipe()
       .subscribe((result: ChartsData[]) => {
         this.result = result;
-        let chartsValue = [];
+        const chartsValue = [];
+        const chartEmpty = [];
         this.result.forEach((r) => {
           chartsValue.push({
             name: r.office,
             y: r.amount
-          })
-        })
-        //chart options
-        this.officeChartOptions.series[0]['data'] = chartsValue;
+          });
+        });
+        if (year && code && mcode) {
+          this.officeChartOptions.series[0].data = chartsValue;
+        } else {
+          this.officeChartOptions.series[0].data = chartEmpty;
+        }
         Highcharts.chart('office', this.officeChartOptions);
-      })
+      });
   }
 }

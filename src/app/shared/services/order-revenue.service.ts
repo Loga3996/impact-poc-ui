@@ -18,9 +18,4 @@ export class OrderRevenueService {
   getSelectData(param: ChartsData): Observable<any> {
     return this.httpClient.post(environment.YM_BACKEND_URL, param);
   }
-
-  // getOfficeData(param: ChartsData): Observable<any> {
-  //   return this.httpClient.post(environment.OFFICE_BACKEND_URL, param);
-  // }
-
 }

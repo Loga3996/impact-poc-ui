@@ -1,10 +1,10 @@
-//Angular Core
+// Angular Core
 import { Component, OnInit } from '@angular/core';
-//Highchart Module
+// Highchart Module
 import * as Highcharts from 'highcharts';
-//Models
+// Models
 import { ChartsData } from 'src/app/shared/models/chart-data';
-//services
+// services
 import { OrderRevenueService } from 'src/app/shared/services/order-revenue.service';
 
 @Component({
@@ -15,19 +15,11 @@ import { OrderRevenueService } from 'src/app/shared/services/order-revenue.servi
 
 export class CompanyRevenueReportComponent implements OnInit {
 
-  highcharts = Highcharts;
-  companyChartOptions: any;
-  officeChartOptions: any;
-  result: ChartsData[];
-  param: ChartsData;
-  clickOptions = [];
-  loading: boolean;
-
-  constructor(private companyService: OrderRevenueService) { }
+  constructor() { }
 
   ngOnInit() {
-    
+
   }
 
- 
+
 }

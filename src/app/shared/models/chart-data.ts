@@ -1,15 +1,12 @@
 
 export class ChartsData {
-  year: number;
-  date: number;
-  month: string;
-  amount: number;
   company: string;
   office: string;
-  butt: number;
-  number: number;
+  month: string;
+  year: number;
+  date: number;
+  amount: number;
   code: number;
   months: string;
-  offcode: number;
   mcode: number;
 }

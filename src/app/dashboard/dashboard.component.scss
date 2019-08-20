@@ -1,6 +1,9 @@
-mat-toolbar {
-  background: #fff !important;
-}
-.button {
-  color: #f16230;
+.dashboard-header{
+  mat-toolbar {
+    background: #fff !important;
+  }
+  .button {
+    color: #fff;
+    background: #F16230;
+  }
 }

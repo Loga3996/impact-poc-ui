@@ -9,7 +9,7 @@ describe('workspace-project App', function () {
     });
     it('should display welcome message', function () {
         page.navigateTo();
-        expect(page.getTitleText()).toEqual('Welcome to working-poc-ui!');
+        expect(page.getTitleText()).toEqual('Welcome to deluxe-branded-marketing!');
     });
     afterEach(function () { return tslib_1.__awaiter(_this, void 0, void 0, function () {
         var logs;

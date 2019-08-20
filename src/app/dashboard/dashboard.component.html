@@ -1,12 +1,14 @@
-<div #content id="content">
+<div #content id="content" class="dashboard-header">
     <mat-toolbar fxLayout="row">
         <div fxLayout="column" fxLayoutAlign="start center" fxFlex="25">
             <a class="navbar-brand" href="index.html">
                 <img src="assets/images/logo-black.png" alt="homepage" class="light-logo">
             </a>
         </div>
-        <div fxLayout="column" fxLayoutAlign="end end" fxFlex="75">
-            <button mat-raised-button class="button" (click)="downloadPdf()">Download PDF</button>
+        <div fxLayout="row" fxLayoutAlign="end end" fxFlex="75">
+            <button mat-mini-fab class="button" (click)="downloadPdf()">
+                <b>PDF</b>
+            </button>
         </div>
     </mat-toolbar>
     <app-company-revenue-year-amount></app-company-revenue-year-amount>
