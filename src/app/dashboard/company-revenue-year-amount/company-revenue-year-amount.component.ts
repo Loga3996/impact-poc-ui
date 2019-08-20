@@ -40,7 +40,7 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
   selected = this.yearValue;
 
   // Chart Options
-  companyChartOptions: any = {
+  monthlyAmtChartOptions: any = {
     chart: {
       type: 'column',
       borderRadius: 10,
@@ -100,6 +100,7 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
           events: {
             click: (event) => {
               this.getMonOffChartBasedOnCom(event.point.year, event.point.code, event.point.mcode);
+              this.getMonOffBillChartBasedOnCom(event.point.year, event.point.code, event.point.mcode);
             }
           }
         }
@@ -131,7 +132,7 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
     }],
   };
   // Chart Options
-  officeChartOptions: any = {
+  officeAmtChartOptions: any = {
     chart: {
       type: 'column',
       borderRadius: 10,
@@ -263,13 +264,13 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
       this.getCompanySelectOptions(yearValue);
       this.getYearOrYearCompanyChart(yearValue);
       this.companyValue = 0;
-
     });
     const company = 'company';
     this.formGroup.controls[company].valueChanges.subscribe((companyValue) => {
       const year = this.formGroup.controls.year.value;
       this.getYearOrYearCompanyChart(year, companyValue);
       this.getMonOffChartBasedOnCom(year, companyValue);
+      this.getMonOffBillChartBasedOnCom(year, companyValue);
     });
   }
 
@@ -277,7 +278,7 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
   getYearSelectOptions() {
     this.loading = true;
     const param = new ChartsData();
-    this.chartService.getSelectData(param)
+    this.chartService.getBillData(param)
       .pipe()
       .subscribe((result: ChartsData[]) => {
         this.loading = false;
@@ -295,7 +296,7 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
   getCompanySelectOptions(year: number) {
     const param = new ChartsData();
     param.year = year;
-    this.chartService.getSelectData(param)
+    this.chartService.getBillData(param)
       .pipe()
       .subscribe((result: ChartsData[]) => {
         this.result = result;
@@ -332,13 +333,13 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
         });
         const chartTitle = selected && selected.point ? selected.point.name : this.result[0].company;
         // Chart
-        this.companyChartOptions.series[0].data = chartsValue;
+        this.monthlyAmtChartOptions.series[0].data = chartsValue;
         if (year && code) {
-          this.companyChartOptions.title.text = `Monthwise Revenue for ${year} and ${chartTitle}`;
+          this.monthlyAmtChartOptions.title.text = `Monthwise Revenue for ${year} and ${chartTitle}`;
         } else {
-          this.companyChartOptions.title.text = `Monthwise Revenue for ${year}`;
+          this.monthlyAmtChartOptions.title.text = `Monthwise Revenue for ${year}`;
         }
-        Highcharts.chart('company', this.companyChartOptions);
+        Highcharts.chart('month-amt', this.monthlyAmtChartOptions);
       });
   }
   // Get Office Month wise Chart based on params
@@ -360,11 +361,37 @@ export class CompanyRevenueYearAmountComponent implements OnInit {
           });
         });
         if (year && code && mcode) {
-          this.officeChartOptions.series[0].data = chartsValue;
+          this.officeAmtChartOptions.series[0].data = chartsValue;
         } else {
-          this.officeChartOptions.series[0].data = chartEmpty;
+          this.officeAmtChartOptions.series[0].data = chartEmpty;
         }
-        Highcharts.chart('office', this.officeChartOptions);
+        Highcharts.chart('office-amt', this.officeAmtChartOptions);
+      });
+  }
+
+  getMonOffBillChartBasedOnCom(year: number, code: number, mcode?: number, selected?: any) {
+    const param = new ChartsData();
+    param.year = year;
+    param.code = code;
+    param.mcode = mcode;
+    this.chartService.getBillData(param)
+      .pipe()
+      .subscribe((result: ChartsData[]) => {
+        this.result = result;
+        const chartsBillValue = [];
+        const chartBillEmpty = [];
+        this.result.forEach((r) => {
+          chartsBillValue.push({
+            name: r.office,
+            y: r.bill
+          });
+        });
+        if (year && code && mcode) {
+          this.officeAmtChartOptions.series[0].data = chartsBillValue;
+        } else {
+          this.officeAmtChartOptions.series[0].data = chartBillEmpty;
+        }
+        Highcharts.chart('bill-amt', this.officeAmtChartOptions);
       });
   }
 }

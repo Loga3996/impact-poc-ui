@@ -9,4 +9,5 @@ export class ChartsData {
   code: number;
   months: string;
   mcode: number;
+  bill: number;
 }
