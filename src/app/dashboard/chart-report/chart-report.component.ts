@@ -30,7 +30,6 @@ export class ChartReportComponent implements OnInit {
   param: ChartsData;
   selectYearOptions = [];
   selectCompanyOptions = [];
-  clickOptions = [];
   title: string;
   yearValue: number;
   companyValue: number;
@@ -249,6 +248,10 @@ export class ChartReportComponent implements OnInit {
     }],
   };
 
+  // No data Message
+  noData = `<span style="font-size:16px;color:black;">No data available for selected company and month<span>`;
+  noDataMsg = this.officeAmtChartOptions.lang.noData;
+
   constructor(
     public fb: FormBuilder,
     private chartService: ChartReportService
@@ -335,7 +338,7 @@ export class ChartReportComponent implements OnInit {
         // Chart
         this.monthlyAmtChartOptions.series[0].data = chartsValue;
         if (year && code) {
-          this.monthlyAmtChartOptions.title.text = `Monthwise Revenue for ${year} and ${chartTitle}`;
+          this.monthlyAmtChartOptions.title.text = `Monthwise Revenue for ${chartTitle}(${year})`;
         } else {
           this.monthlyAmtChartOptions.title.text = `Monthwise Revenue for ${year}`;
         }
@@ -360,10 +363,16 @@ export class ChartReportComponent implements OnInit {
             y: r.amount
           });
         });
+        const companyName = selected && selected.point ? selected.point.name : this.result[0].company;
+        const monthName = selected && selected.point ? selected.point.name : this.result[0].months;
         if (year && code && mcode) {
           this.officeAmtChartOptions.series[0].data = chartsValue;
+          this.officeAmtChartOptions.title.text = `Officewise Revenue for ${companyName}(${monthName})`;
+          this.officeAmtChartOptions.lang.noData = this.noData;
         } else {
           this.officeAmtChartOptions.series[0].data = chartEmpty;
+          this.officeAmtChartOptions.title.text = ``;
+          this.officeAmtChartOptions.lang.noData = this.noDataMsg;
         }
         Highcharts.chart('office-amt', this.officeAmtChartOptions);
       });
