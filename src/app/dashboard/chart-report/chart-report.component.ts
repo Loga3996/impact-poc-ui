@@ -249,7 +249,7 @@ export class ChartReportComponent implements OnInit {
   };
 
   // No data Message
-  noData = `<span style="font-size:16px;color:black;">No data available for selected company and month<span>`;
+  noData = `<span style="font-size:16px;color:black;">No data available for selected Period and Company<span>`;
   noDataMsg = this.officeAmtChartOptions.lang.noData;
 
   constructor(
@@ -338,7 +338,7 @@ export class ChartReportComponent implements OnInit {
         // Chart
         this.monthlyAmtChartOptions.series[0].data = chartsValue;
         if (year && code) {
-          this.monthlyAmtChartOptions.title.text = `Monthwise Revenue for ${chartTitle}(${year})`;
+          this.monthlyAmtChartOptions.title.text = `Monthwise Revenue for ${chartTitle} (${year})`;
         } else {
           this.monthlyAmtChartOptions.title.text = `Monthwise Revenue for ${year}`;
         }
@@ -367,7 +367,7 @@ export class ChartReportComponent implements OnInit {
         const monthName = selected && selected.point ? selected.point.name : this.result[0].months;
         if (year && code && mcode) {
           this.officeAmtChartOptions.series[0].data = chartsValue;
-          this.officeAmtChartOptions.title.text = `Officewise Revenue for ${companyName}(${monthName})`;
+          this.officeAmtChartOptions.title.text = `Officewise Revenue for ${companyName} (${monthName})`;
           this.officeAmtChartOptions.lang.noData = this.noData;
         } else {
           this.officeAmtChartOptions.series[0].data = chartEmpty;
