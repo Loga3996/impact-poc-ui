@@ -376,7 +376,7 @@ export class ChartReportComponent implements OnInit {
         } else {
           this.officeChartOptions.series[0].data = chartBillEmpty;
         }
-        Highcharts.chart('bill-amt', this.officeChartOptions);
+        Highcharts.chart('office-bill', this.officeChartOptions);
       });
   }
 }
