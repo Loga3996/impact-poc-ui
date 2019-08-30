@@ -1,7 +1,7 @@
 <!-- Toolbar -->
 <div class="chart-dashboard">
   <mat-toolbar fxLayout="row" fxLayoutAlign="center center" class="toolbar">
-    <span fxFlex="50"><b>Cart-Orders Summary</b></span>
+    <span fxFlex="50"><b>Onesite Orders - Revenue Summary</b></span>
     <!-- Year Selection Field -->
     <form [formGroup]="formGroup" fxLayout="row" fxFlex>
       <mat-form-field appearance="outline" fxFlex=40>
@@ -29,15 +29,26 @@
   </div>
   <!-- Charts -->
   <div fxLayout='column' fxLayoutGap="10px" *ngIf="!loading else loaded">
-    <!-- Year Wise Company & Office Charts -->
-    <highcharts-chart id="month-amt" [Highcharts]="highcharts" [options]="monthlyAmtChartOptions"
-      style="width: 100%; height: 400px; display: block;">
+    <!-- Month Wise Amount Charts -->
+    <highcharts-chart 
+      id="month-amt"
+      [Highcharts]="highcharts" 
+      [options]="monthlyChartOptions" 
+      class="chart-size">
     </highcharts-chart>
-    <highcharts-chart id="office-amt" [Highcharts]="highcharts" [options]="officeAmtChartOptions"
-      style=" width:100%; height: 400px; display: block;">
+    <!-- Office Wise Amount Charts -->
+    <highcharts-chart 
+      id="office-amt" 
+      [Highcharts]="highcharts" 
+      [options]="officeChartOptions" 
+      class="chart-size">
     </highcharts-chart>
-    <highcharts-chart id="bill-amt" [Highcharts]="highcharts" [options]="officeAmtChartOptions"
-      style=" width:100%; height: 400px; display: block;">
+    <!-- Office Wise Bill to Office Charts-->
+    <highcharts-chart 
+      id="bill-amt" 
+      [Highcharts]="highcharts" 
+      [options]="officeChartOptions" 
+      class="chart-size">
     </highcharts-chart>
   </div>
 </div>
