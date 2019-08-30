@@ -1,4 +1,3 @@
-
 export class ChartsData {
   company: string;
   office: string;

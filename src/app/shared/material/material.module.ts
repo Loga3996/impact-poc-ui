@@ -1,4 +1,7 @@
+// Angular Imports
 import { NgModule } from '@angular/core';
+
+// Angular Material Imports
 import {
     MatAutocompleteModule,
     MatButtonModule,

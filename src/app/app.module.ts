@@ -1,11 +1,14 @@
-import { BrowserModule } from '@angular/platform-browser';
+// Angular Imports
 import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
+// Modules
 import { AppRoutingModule } from './app.routing.module';
-import { AppComponent } from './app.component';
 import { DashboardModule } from './dashboard/dashboard.module';
 
+// Components
+import { AppComponent } from './app.component';
 
 @NgModule({
   declarations: [
