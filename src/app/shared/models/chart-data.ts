@@ -1,12 +1,12 @@
 export class ChartsData {
   company: string;
   office: string;
-  month: string;
+  product: string;
   months: string;
   year: number;
-  date: number;
+  companyCode: number;
+  monthCode: number;
   amount: number;
-  code: number;
-  mcode: number;
   bill: number;
+  total: number;
 }

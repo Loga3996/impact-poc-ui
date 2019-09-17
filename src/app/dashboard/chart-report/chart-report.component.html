@@ -29,26 +29,37 @@
   </div>
   <!-- Charts -->
   <div fxLayout='column' fxLayoutGap="10px" *ngIf="!loading else loaded">
-    <!-- Month Wise Amount Charts -->
-    <highcharts-chart 
-      id="month-amt"
-      [Highcharts]="highcharts" 
-      [options]="monthlyChartOptions" 
-      class="chart-size">
-    </highcharts-chart>
-    <!-- Office Wise Amount Charts -->
-    <highcharts-chart 
-      id="office-amt" 
-      [Highcharts]="highcharts" 
-      [options]="officeChartOptions" 
-      class="chart-size">
-    </highcharts-chart>
-    <!-- Office Wise Bill to Office Charts-->
-    <highcharts-chart 
-      id="office-bill" 
-      [Highcharts]="highcharts" 
-      [options]="officeChartOptions" 
-      class="chart-size">
-    </highcharts-chart>
+    <div fxLayout='row' fxLayoutGap="10px">
+      <!-- Top Five Products -->
+      <highcharts-chart 
+        id="product" 
+        class="chart-size" 
+        [Highcharts]="highcharts" 
+        [options]="officeChartOptions">
+      </highcharts-chart>
+      <!-- Month Wise Amount Charts -->
+      <highcharts-chart 
+        id="month-amt" 
+        class="chart-size" 
+        [Highcharts]="highcharts" 
+        [options]="monthlyChartOptions">
+      </highcharts-chart>
+    </div>
+    <div fxLayout='row' fxLayoutGap="10px">
+      <!-- Office Wise Amount Charts -->
+      <highcharts-chart 
+        id="office-amt" 
+        class="chart-size" 
+        [Highcharts]="highcharts" 
+        [options]="monthlyChartOptions">
+      </highcharts-chart>
+      <!-- Office Wise Bill to Office Charts-->
+      <highcharts-chart 
+        id="office-bill" 
+        class="chart-size" 
+        [Highcharts]="highcharts" 
+        [options]="officeChartOptions">
+      </highcharts-chart>
+    </div>
   </div>
 </div>

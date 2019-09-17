@@ -11,11 +11,11 @@ noData(Highcharts);
 HighchartsMore(Highcharts);
 HighchartsExporting(Highcharts);
 
-// Models
-import { ChartsData } from 'src/app/shared/models/chart-data';
-
 // Services
 import { ChartReportService } from 'src/app/shared/services/chart-report.service';
+
+// Models
+import { ChartsData } from 'src/app/shared/models/chart-data';
 
 @Component({
   selector: 'app-chart-report',
@@ -36,7 +36,7 @@ export class ChartReportComponent implements OnInit {
   yearValue: number;
   companyValue: number;
   year: number;
-  code: number;
+  companyCode: number;
   loading: boolean;
 
   // Chart Options
@@ -47,7 +47,12 @@ export class ChartReportComponent implements OnInit {
     },
     events: {},
     title: {
-      text: ''
+      text: '',
+      widthAdjust: -100,
+      style: {
+        color: '#F16230',
+        fontWeight: 'bold',
+      }
     },
     xAxis: {
       type: 'category',
@@ -81,7 +86,7 @@ export class ChartReportComponent implements OnInit {
     tooltip: {
       headerFormat: '<span style="font-size:16px; margin:auto"><b>{point.key}</b></span><table>',
       pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-        '<td style="padding:0"><b>$ {point.y:.2f}</b></td></tr>',
+        '<td style="padding:0"><b> $ {point.y:,.0f}</b></td></tr>',
       footerFormat: '</table>',
       shared: true,
       useHTML: true,
@@ -94,13 +99,14 @@ export class ChartReportComponent implements OnInit {
         states: { select: { color: null, borderWidth: 2, borderColor: '#000000' } },
         dataLabels: {
           enabled: true,
-          format: `$ {point.y:.2f}`
+          format: `$ {point.y:,.0f}`,
+          allowOverlap: true,
         },
         point: {
           events: {
             click: (event) => {
-              this.getOffAmtChartBasedOnYearCompany(event.point.year, event.point.code, event.point.mcode);
-              this.getOffBillChartBasedOnYearCompany(event.point.year, event.point.code, event.point.mcode);
+              this.getOffAmtChartBasedOnYearCompany(event.point.year, event.point.companyCode, event.point.monthCode);
+              this.getOffBillChartBasedOnYearCompany(event.point.year, event.point.companyCode, event.point.monthCode);
             }
           }
         }
@@ -123,11 +129,16 @@ export class ChartReportComponent implements OnInit {
       borderRadius: 10,
     },
     lang: {
-      noData: `<span style="font-size:16px;color:black;">No data available.\n Please Select Company and Month<span>`
+      noData: `<span style="font-size:16px;color:black;">No data available.\n Please Select Company and Month<span>`,
     },
     events: {},
     title: {
-      text: ''
+      text: '',
+      widthAdjust: -50,
+      style: {
+        color: '#F16230',
+        fontWeight: 'bold',
+      }
     },
     xAxis: {
       type: 'category',
@@ -138,7 +149,7 @@ export class ChartReportComponent implements OnInit {
       },
       title: {
         useHTML: true,
-        text: `<span style="color:black;"><b>Office</b><span>`,
+        text: ''
       },
     },
     yAxis: {
@@ -161,7 +172,7 @@ export class ChartReportComponent implements OnInit {
     tooltip: {
       headerFormat: '<span style="font-size:16px; margin:auto"><b>{point.key}</b></span><table>',
       pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-        '<td style="padding:0"><b>$ {point.y:.2f}</b></td></tr>',
+        '<td style="padding:0"><b> $ {point.y:,.0f}</b></td></tr>',
       footerFormat: '</table>',
       shared: true,
       useHTML: true,
@@ -171,8 +182,9 @@ export class ChartReportComponent implements OnInit {
       series: {
         cursor: 'pointer',
         dataLabels: {
+          allowOverlap: true,
           enabled: true,
-          format: `<b>$ {point.y:.2f}</b>`
+          format: `<b>$ {point.y:,.0f}</b>`
         },
       }
     },
@@ -226,6 +238,7 @@ export class ChartReportComponent implements OnInit {
       year: this.getYearSelectOptions(),
       company: this.getCompanySelectOptions(this.year),
     });
+    this.getTopFiveProducts();
     const years = 'year';
     this.formGroup.controls[years].valueChanges.subscribe((yearValue) => {
       this.getCompanySelectOptions(yearValue);
@@ -271,7 +284,7 @@ export class ChartReportComponent implements OnInit {
         this.result.forEach((r) => {
           companyValue.push({
             selectCompanyName: r.company,
-            selectCompanyValue: r.code,
+            selectCompanyValue: r.companyCode,
           });
           this.selectCompanyOptions = companyValue;
         });
@@ -279,10 +292,10 @@ export class ChartReportComponent implements OnInit {
   }
 
   // Get Month wise Year or Year & Company Chart based on params
-  getYearOrYearCompanyChart(year: number, code?: number) {
+  getYearOrYearCompanyChart(year: number, companyCode?: number) {
     const param = new ChartsData();
     param.year = year;
-    param.code = code;
+    param.companyCode = companyCode;
     this.chartService.getAmountData(param)
       .pipe()
       .subscribe((result: ChartsData[]) => {
@@ -293,15 +306,15 @@ export class ChartReportComponent implements OnInit {
             name: r.months,
             y: r.amount,
             year: r.year,
-            code: r.code,
-            mcode: r.mcode,
+            companyCode: r.companyCode,
+            monthCode: r.monthCode,
             company: r.company
           });
         });
         const chartTitle = this.result[0].company;
         // Chart
         this.monthlyChartOptions.series[0].data = chartsValue;
-        if (year && code) {
+        if (year && companyCode) {
           this.monthlyChartOptions.title.text = `Monthwise Revenue for ${chartTitle} (${year})`;
         } else {
           this.monthlyChartOptions.title.text = `Monthwise Revenue for ${year}`;
@@ -311,11 +324,11 @@ export class ChartReportComponent implements OnInit {
   }
 
   // Get Office wise Amount Chart based on params
-  getOffAmtChartBasedOnYearCompany(year: number, code: number, mcode?: number) {
+  getOffAmtChartBasedOnYearCompany(year: number, companyCode: number, monthCode?: number) {
     const param = new ChartsData();
     param.year = year;
-    param.code = code;
-    param.mcode = mcode;
+    param.companyCode = companyCode;
+    param.monthCode = monthCode;
     this.chartService.getAmountData(param)
       .pipe()
       .subscribe((result: ChartsData[]) => {
@@ -327,34 +340,36 @@ export class ChartReportComponent implements OnInit {
             name: r.office,
             y: r.amount,
             company: r.company,
-            month: r.months
+            months: r.months
           });
           this.companyName = chartsValue[0].company;
-          this.monthName = chartsValue[0].month;
+          this.monthName = chartsValue[0].months;
         });
         const companyName = this.companyName;
         const monthName = this.monthName;
-        if (year && code && mcode) {
-          this.officeChartOptions.series[0].data = chartsValue;
-          this.officeChartOptions.lang.noData = this.noData;
+        this.officeChartOptions.xAxis.title.text = `<span style="color:black;"><b>Offices</b><span>`;
+        if (year && companyCode && monthCode) {
           this.officeChartOptions.title.text = `Officewise Revenue for ${companyName} ( ${monthName} )`;
           this.officeChartOptions.yAxis.title.text = '<span style="color:black;"><b>Amount($)</b><span>';
+          this.officeChartOptions.lang.noData = this.noData;
+          this.officeChartOptions.navigator.enabled = true;
+          this.officeChartOptions.series[0].data = chartsValue;
         } else {
-          this.officeChartOptions.series[0].data = chartEmpty;
-          this.officeChartOptions.lang.noData = this.noDataMsg;
           this.officeChartOptions.title.text = ``;
+          this.officeChartOptions.lang.noData = this.noDataMsg;
           this.officeChartOptions.yAxis.title.text = '';
+          this.officeChartOptions.series[0].data = chartEmpty;
         }
         Highcharts.chart('office-amt', this.officeChartOptions);
       });
   }
 
   // Get Office wise Bill to Office Chart based on params
-  getOffBillChartBasedOnYearCompany(year: number, code: number, mcode?: number) {
+  getOffBillChartBasedOnYearCompany(year: number, companyCode: number, monthCode?: number) {
     const param = new ChartsData();
     param.year = year;
-    param.code = code;
-    param.mcode = mcode;
+    param.companyCode = companyCode;
+    param.monthCode = monthCode;
     this.chartService.getBillData(param)
       .pipe()
       .subscribe((result: ChartsData[]) => {
@@ -369,14 +384,39 @@ export class ChartReportComponent implements OnInit {
         });
         const companyName = this.companyName;
         const monthName = this.monthName;
-        if (year && code && mcode) {
-          this.officeChartOptions.series[0].data = chartsBillValue;
+        this.officeChartOptions.xAxis.title.text = `<span style="color:black;"><b>Offices</b><span>`;
+        if (year && companyCode && monthCode) {
           this.officeChartOptions.title.text = `Officewise Bill to Office for ${companyName} ( ${monthName} )`;
           this.officeChartOptions.yAxis.title.text = '<span style="color:black;"><b>Bill to Office</b><span>';
+          this.officeChartOptions.navigator.enabled = false;
+          this.officeChartOptions.series[0].data = chartsBillValue;
         } else {
           this.officeChartOptions.series[0].data = chartBillEmpty;
         }
         Highcharts.chart('office-bill', this.officeChartOptions);
+      });
+  }
+
+  // Top Five Products
+  getTopFiveProducts() {
+    const param = new ChartsData();
+    this.chartService.getAmountData(param)
+      .pipe()
+      .subscribe((result: ChartsData[]) => {
+        this.result = result;
+        const chartsValue = [];
+        this.result.forEach((r) => {
+          chartsValue.push({
+            name: decodeURIComponent(r.product),
+            y: r.total,
+          });
+        });
+        this.officeChartOptions.title.text = 'Top Five Products';
+        this.officeChartOptions.xAxis.title.text = `<span style="color:black;"><b>Products</b><span>`;
+        this.officeChartOptions.yAxis.title.text = '<span style="color:black;"><b>Amount($)</b><span>';
+        this.officeChartOptions.navigator.enabled = false;
+        this.officeChartOptions.series[0].data = chartsValue;
+        Highcharts.chart('product', this.officeChartOptions);
       });
   }
 }
