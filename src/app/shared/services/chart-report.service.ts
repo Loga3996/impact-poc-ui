@@ -19,5 +19,8 @@ export class ChartReportService {
   getBillData(param: ChartsData): Observable<any> {
     return this.httpClient.post(environment.CART_BILL_URL, param);
   }
+  getPromoData(param: ChartsData): Observable<any> {
+    return this.httpClient.post(environment.CART_PROMO_URL, param);
+  }
 
 }

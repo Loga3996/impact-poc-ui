@@ -9,4 +9,5 @@ export class ChartsData {
   amount: number;
   bill: number;
   total: number;
+  promo: number;
 }

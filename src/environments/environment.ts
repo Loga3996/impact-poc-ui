@@ -9,6 +9,7 @@ export const environment = {
   // backend info
   CART_AMOUNT_URL: 'http://localhost:7000/cart-orders/Cart_Orders_Amount',
   CART_BILL_URL: 'http://localhost:7000/cart-orders/Cart_Orders_Bill',
+  CART_PROMO_URL: 'http://localhost:7000/cart-orders/Cart_Orders_Promo'
 
 };
 
