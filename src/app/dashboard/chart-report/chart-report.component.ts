@@ -57,14 +57,12 @@ export class ChartReportComponent implements OnInit {
   officeChartOptions = this.chartOptions.officeChartOptions;
 
   ngOnInit() {
-    this.loading = true;
     this.formGroup = this.fb.group({
       year: this.getYearSelectOptions(),
       company: this.getCompanySelectOptions(this.year),
     });
     this.getTopFiveProducts();
     this.selectYearChanges();
-    this.loading = false;
     this.selectCompanyChanges();
   }
 
@@ -89,6 +87,7 @@ export class ChartReportComponent implements OnInit {
   }
   // Get Year Select Options
   getYearSelectOptions() {
+    this.loading = true;
     const param = new ChartsData();
     this.chartService.getBillData(param)
       .pipe()
@@ -98,6 +97,7 @@ export class ChartReportComponent implements OnInit {
           this.selectYearOptions.push({
             selectYearValue: r.year,
           });
+          this.loading = false;
           this.yearValue = this.selectYearOptions.slice(-1)[0].selectYearValue;
         });
       });
