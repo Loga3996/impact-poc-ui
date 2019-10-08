@@ -37,7 +37,7 @@
         [Highcharts]="highcharts" 
         [options]="officeChartOptions">
       </highcharts-chart>
-      <!-- Month Wise Amount Charts -->
+      <!-- Monthly Amount chart -->
       <highcharts-chart 
         id="month-amt" 
         class="chart-size" 
@@ -45,17 +45,24 @@
         [options]="monthlyChartOptions">
       </highcharts-chart>
     </div>
+    <!-- Office - Amount chart -->
+    <highcharts-chart 
+      id="office-amt" 
+      class="chart-size" 
+      [Highcharts]="highcharts" 
+      [options]="monthlyChartOptions">
+    </highcharts-chart>
     <div fxLayout='row' fxLayoutGap="10px">
-      <!-- Office Wise Amount Charts -->
-      <highcharts-chart 
-        id="office-amt" 
-        class="chart-size" 
-        [Highcharts]="highcharts" 
-        [options]="monthlyChartOptions">
-      </highcharts-chart>
-      <!-- Office Wise Bill to Office Charts-->
+      <!-- Office - Bill_office chart-->
       <highcharts-chart 
         id="office-bill" 
+        class="chart-size" 
+        [Highcharts]="highcharts" 
+        [options]="officeChartOptions">
+      </highcharts-chart>
+      <!-- Office - Promo -->
+      <highcharts-chart 
+        id="office-promo"
         class="chart-size" 
         [Highcharts]="highcharts" 
         [options]="officeChartOptions">

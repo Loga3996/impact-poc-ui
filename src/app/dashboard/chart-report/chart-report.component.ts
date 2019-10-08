@@ -7,12 +7,15 @@ import * as Highcharts from 'highcharts/highstock';
 import HighchartsMore from 'highcharts/highcharts-more';
 import HighchartsExporting from 'highcharts/modules/exporting';
 import noData from 'highcharts/modules/no-data-to-display';
-noData(Highcharts);
+import Drilldown from 'highcharts/modules/drilldown';
 HighchartsMore(Highcharts);
 HighchartsExporting(Highcharts);
+noData(Highcharts);
+Drilldown(Highcharts);
 
 // Services
 import { ChartReportService } from 'src/app/shared/services/chart-report.service';
+import { ChartOptionsService } from 'src/app/shared/services/chart-options.service';
 
 // Models
 import { ChartsData } from 'src/app/shared/models/chart-data';
@@ -39,229 +42,57 @@ export class ChartReportComponent implements OnInit {
   companyCode: number;
   loading: boolean;
 
-  // Chart Options
-  monthlyChartOptions: any = {
-    chart: {
-      type: 'column',
-      borderRadius: 10,
-    },
-    events: {},
-    title: {
-      text: '',
-      widthAdjust: -100,
-      style: {
-        color: '#F16230',
-        fontWeight: 'bold',
-      }
-    },
-    xAxis: {
-      type: 'category',
-      labels: {
-        style: {
-          color: 'black',
-        }
-      },
-      title: {
-        useHTML: true,
-        text: `<span style="color:black;"><b>Months</b><span>`,
-      },
-    },
-    yAxis: {
-      labels: {
-        style: {
-          color: 'black',
-        },
-      },
-      title: {
-        useHTML: true,
-        text: '<span style="color:black;"><b>Amount($)</b><span>',
-      },
-    },
-    legend: {
-      enabled: false,
-    },
-    credits: {
-      enabled: false,
-    },
-    tooltip: {
-      headerFormat: '<span style="font-size:16px; margin:auto"><b>{point.key}</b></span><table>',
-      pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-        '<td style="padding:0"><b> $ {point.y:,.0f}</b></td></tr>',
-      footerFormat: '</table>',
-      shared: true,
-      useHTML: true,
-      borderRadius: 30,
-    },
-    plotOptions: {
-      series: {
-        cursor: 'pointer',
-        allowPointSelect: true,
-        states: { select: { color: null, borderWidth: 2, borderColor: '#000000' } },
-        dataLabels: {
-          enabled: true,
-          format: `$ {point.y:,.0f}`,
-          allowOverlap: true,
-        },
-        point: {
-          events: {
-            click: (event) => {
-              this.getOffAmtChartBasedOnYearCompany(event.point.year, event.point.companyCode, event.point.monthCode);
-              this.getOffBillChartBasedOnYearCompany(event.point.year, event.point.companyCode, event.point.monthCode);
-            }
-          }
-        }
-      }
-    },
-    exporting: {
-      enabled: false
-    },
-    series: [{
-      name: `<b>Amount</b>`,
-      data: [],
-      color: '#F16230',
-    }],
-  };
-
-  // Chart Options
-  officeChartOptions: any = {
-    chart: {
-      type: 'column',
-      borderRadius: 10,
-    },
-    lang: {
-      noData: `<span style="font-size:16px;color:black;">No data available.\n Please Select Company and Month<span>`,
-    },
-    events: {},
-    title: {
-      text: '',
-      widthAdjust: -50,
-      style: {
-        color: '#F16230',
-        fontWeight: 'bold',
-      }
-    },
-    xAxis: {
-      type: 'category',
-      labels: {
-        style: {
-          color: 'black',
-        },
-      },
-      title: {
-        useHTML: true,
-        text: ''
-      },
-    },
-    yAxis: {
-      labels: {
-        style: {
-          color: 'black',
-        }
-      },
-      title: {
-        useHTML: true,
-        text: '',
-      },
-    },
-    legend: {
-      enabled: false,
-    },
-    credits: {
-      enabled: false,
-    },
-    tooltip: {
-      headerFormat: '<span style="font-size:16px; margin:auto"><b>{point.key}</b></span><table>',
-      pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-        '<td style="padding:0"><b> $ {point.y:,.0f}</b></td></tr>',
-      footerFormat: '</table>',
-      shared: true,
-      useHTML: true,
-      borderRadius: 30,
-    },
-    plotOptions: {
-      series: {
-        cursor: 'pointer',
-        dataLabels: {
-          allowOverlap: true,
-          enabled: true,
-          format: `<b>$ {point.y:,.0f}</b>`
-        },
-      }
-    },
-    exporting: {
-      enabled: false
-    },
-    navigator: {
-      enabled: true,
-      margin: 0,
-      height: 12,
-      maskFill: '#F16230',
-      maskWidth: 300,
-      series: {
-        name: 'navigator',
-        lineWidth: 0,
-        marker: {
-          enabled: false,
-        },
-      },
-      xAxis: {
-        plotBands: [{
-          from: -100,
-          to: 10000,
-          color: 'rgba(16, 16, 16, 0.5)'
-        }]
-      },
-      handles: {
-        backgroundColor: '#000000',
-        borderColor: '#777',
-        borderRadius: 5,
-      },
-    },
-    series: [{
-      name: `<b>Amount</b>`,
-      data: [],
-      color: '#F16230',
-    }],
-  };
-
   // No data Message
   noData = `<span style="font-size:16px;color:black;">No data available<span>`;
-  noDataMsg = this.officeChartOptions.lang.noData;
+  noDataMsg = this.chartOptions.officeChartOptions.lang.noData;
 
   constructor(
     public fb: FormBuilder,
-    private chartService: ChartReportService
+    private chartService: ChartReportService,
+    private chartOptions: ChartOptionsService
   ) { }
 
+  // Chart Options
+  monthlyChartOptions = this.chartOptions.monthlyChartOptions;
+  officeChartOptions = this.chartOptions.officeChartOptions;
+
   ngOnInit() {
+    this.loading = true;
     this.formGroup = this.fb.group({
       year: this.getYearSelectOptions(),
       company: this.getCompanySelectOptions(this.year),
     });
     this.getTopFiveProducts();
+    this.selectYearChanges();
+    this.loading = false;
+    this.selectCompanyChanges();
+  }
+
+  selectYearChanges() {
     const years = 'year';
     this.formGroup.controls[years].valueChanges.subscribe((yearValue) => {
       this.getCompanySelectOptions(yearValue);
       this.getYearOrYearCompanyChart(yearValue);
       this.companyValue = 0;
     });
+  }
+
+  selectCompanyChanges() {
     const company = 'company';
     this.formGroup.controls[company].valueChanges.subscribe((companyValue) => {
       const year = this.formGroup.controls.year.value;
       this.getYearOrYearCompanyChart(year, companyValue);
       this.getOffAmtChartBasedOnYearCompany(year, companyValue);
       this.getOffBillChartBasedOnYearCompany(year, companyValue);
+      this.getOffPromoChartBasedOnYearCompany(year, companyValue);
     });
   }
-
   // Get Year Select Options
   getYearSelectOptions() {
-    this.loading = true;
     const param = new ChartsData();
     this.chartService.getBillData(param)
       .pipe()
       .subscribe((result: ChartsData[]) => {
-        this.loading = false;
         this.result = result;
         this.result.forEach((r) => {
           this.selectYearOptions.push({
@@ -271,7 +102,6 @@ export class ChartReportComponent implements OnInit {
         });
       });
   }
-
   // Get Company select options based on selected year
   getCompanySelectOptions(year: number) {
     const param = new ChartsData();
@@ -290,8 +120,7 @@ export class ChartReportComponent implements OnInit {
         });
       });
   }
-
-  // Get Month wise Year or Year & Company Chart based on params
+  // Get Month - Amount Chart based on params
   getYearOrYearCompanyChart(year: number, companyCode?: number) {
     const param = new ChartsData();
     param.year = year;
@@ -311,18 +140,23 @@ export class ChartReportComponent implements OnInit {
             company: r.company
           });
         });
-        const chartTitle = this.result[0].company;
-        // Chart
-        this.monthlyChartOptions.series[0].data = chartsValue;
+        const id = 'month-amt';
+        this.chartOptions.monthlyChartOptions.series[0].data = chartsValue;
+        this.chartOptions.monthlyChartOptions.exporting.buttons.contextButton.onclick = () => { this.chartOptions.fullScreen(id); };
         if (year && companyCode) {
-          this.monthlyChartOptions.title.text = `Monthwise Revenue for ${chartTitle} (${year})`;
+          const chartTitle = chartsValue[0].company;
+          this.chartOptions.monthlyChartOptions.title.text = `Monthwise Revenue for ${chartTitle} (${year})`;
+          this.chartOptions.monthlyChartOptions.plotOptions.series.point.events.click = (event) => {
+            this.getOffAmtChartBasedOnYearCompany(event.point.year, event.point.companyCode, event.point.monthCode);
+            this.getOffBillChartBasedOnYearCompany(event.point.year, event.point.companyCode, event.point.monthCode);
+            this.getOffPromoChartBasedOnYearCompany(event.point.year, event.point.companyCode, event.point.monthCode);
+          };
         } else {
-          this.monthlyChartOptions.title.text = `Monthwise Revenue for ${year}`;
+          this.chartOptions.monthlyChartOptions.title.text = `Monthwise Revenue for ${year}`;
         }
-        Highcharts.chart('month-amt', this.monthlyChartOptions);
+        Highcharts.chart('month-amt', this.chartOptions.monthlyChartOptions);
       });
   }
-
   // Get Office wise Amount Chart based on params
   getOffAmtChartBasedOnYearCompany(year: number, companyCode: number, monthCode?: number) {
     const param = new ChartsData();
@@ -347,23 +181,24 @@ export class ChartReportComponent implements OnInit {
         });
         const companyName = this.companyName;
         const monthName = this.monthName;
-        this.officeChartOptions.xAxis.title.text = `<span style="color:black;"><b>Offices</b><span>`;
+        const id = 'office-amt';
+        this.chartOptions.officeChartOptions.xAxis.title.text = `<span style="color:black;"><b>Offices</b><span>`;
+        this.chartOptions.officeChartOptions.exporting.buttons.contextButton.onclick = () => { this.chartOptions.fullScreen(id); };
         if (year && companyCode && monthCode) {
-          this.officeChartOptions.title.text = `Officewise Revenue for ${companyName} ( ${monthName} )`;
-          this.officeChartOptions.yAxis.title.text = '<span style="color:black;"><b>Amount($)</b><span>';
-          this.officeChartOptions.lang.noData = this.noData;
-          this.officeChartOptions.navigator.enabled = true;
-          this.officeChartOptions.series[0].data = chartsValue;
+          this.chartOptions.officeChartOptions.title.text = `Officewise Revenue for ${companyName} ( ${monthName} )`;
+          this.chartOptions.officeChartOptions.yAxis.title.text = '<span style="color:black;"><b>Amount($)</b><span>';
+          this.chartOptions.officeChartOptions.lang.noData = this.noData;
+          this.chartOptions.officeChartOptions.navigator.enabled = true;
+          this.chartOptions.officeChartOptions.series[0].data = chartsValue;
         } else {
-          this.officeChartOptions.title.text = ``;
-          this.officeChartOptions.lang.noData = this.noDataMsg;
-          this.officeChartOptions.yAxis.title.text = '';
-          this.officeChartOptions.series[0].data = chartEmpty;
+          this.chartOptions.officeChartOptions.title.text = ``;
+          this.chartOptions.officeChartOptions.lang.noData = this.noDataMsg;
+          this.chartOptions.officeChartOptions.yAxis.title.text = '';
+          this.chartOptions.officeChartOptions.series[0].data = chartEmpty;
         }
-        Highcharts.chart('office-amt', this.officeChartOptions);
+        Highcharts.chart('office-amt', this.chartOptions.officeChartOptions);
       });
   }
-
   // Get Office wise Bill to Office Chart based on params
   getOffBillChartBasedOnYearCompany(year: number, companyCode: number, monthCode?: number) {
     const param = new ChartsData();
@@ -384,19 +219,66 @@ export class ChartReportComponent implements OnInit {
         });
         const companyName = this.companyName;
         const monthName = this.monthName;
-        this.officeChartOptions.xAxis.title.text = `<span style="color:black;"><b>Offices</b><span>`;
+        const id = 'office-bill';
+        this.chartOptions.officeChartOptions.xAxis.title.text = `<span style="color:black;"><b>Offices</b><span>`;
+        this.chartOptions.officeChartOptions.exporting.buttons.contextButton.onclick = () => { this.chartOptions.fullScreen(id); };
         if (year && companyCode && monthCode) {
-          this.officeChartOptions.title.text = `Officewise Bill to Office for ${companyName} ( ${monthName} )`;
-          this.officeChartOptions.yAxis.title.text = '<span style="color:black;"><b>Bill to Office</b><span>';
-          this.officeChartOptions.navigator.enabled = false;
-          this.officeChartOptions.series[0].data = chartsBillValue;
+          this.chartOptions.officeChartOptions.title.text = `Officewise Bill to Office for ${companyName} ( ${monthName} )`;
+          this.chartOptions.officeChartOptions.yAxis.title.text = '<span style="color:black;"><b>Bill to Office($)</b><span>';
+          this.chartOptions.officeChartOptions.navigator.enabled = false;
+          this.chartOptions.officeChartOptions.series[0].data = chartsBillValue;
         } else {
-          this.officeChartOptions.series[0].data = chartBillEmpty;
+          this.chartOptions.officeChartOptions.series[0].data = chartBillEmpty;
         }
-        Highcharts.chart('office-bill', this.officeChartOptions);
+        Highcharts.chart('office-bill', this.chartOptions.officeChartOptions);
       });
   }
-
+  // get office promo chart based on params
+  getOffPromoChartBasedOnYearCompany(year: number, companyCode: number, monthCode?: number) {
+    const param = new ChartsData();
+    param.year = year;
+    param.companyCode = companyCode;
+    param.monthCode = monthCode;
+    this.chartService.getPromoData(param)
+      .pipe()
+      .subscribe((result: ChartsData[]) => {
+        this.result = result;
+        const chartsPromoValue = [];
+        const chartsPromoDetail = [];
+        const chartBillEmpty = [];
+        this.result.forEach((r) => {
+          chartsPromoValue.push({
+            name: r.office,
+            y: r.amount,
+            drilldown: r.office
+          });
+          chartsPromoDetail.push({
+            name: `<b>Amount</b>`,
+            id: r.office,
+            data: [
+              ['Bill-to-Office', r.bill],
+              ['Promo', r.promo],
+            ]
+          });
+        });
+        const companyName = this.companyName;
+        const monthName = this.monthName;
+        const id = 'office-promo';
+        this.chartOptions.officeChartOptions.exporting.buttons.contextButton.onclick = () => { this.chartOptions.fullScreen(id); };
+        this.chartOptions.officeChartOptions.xAxis.title.text = `<span style="color:black;"><b>Offices</b><span>`;
+        if (year && companyCode && monthCode) {
+          this.chartOptions.officeChartOptions.title.text = `Officewise Bill Office and Bill Office Promo for ${companyName} ( ${monthName} )`;
+          this.chartOptions.officeChartOptions.yAxis.title.text = '<span style="color:black;"><b>Amount($)</b><span>';
+          this.chartOptions.officeChartOptions.navigator.enabled = false;
+          this.chartOptions.officeChartOptions.series[0].data = chartsPromoValue;
+          this.chartOptions.officeChartOptions.drilldown.series = chartsPromoDetail;
+        } else {
+          this.chartOptions.officeChartOptions.title.text = '';
+          this.chartOptions.officeChartOptions.series[0].data = chartBillEmpty;
+        }
+        Highcharts.chart('office-promo', this.chartOptions.officeChartOptions);
+      });
+  }
   // Top Five Products
   getTopFiveProducts() {
     const param = new ChartsData();
@@ -411,12 +293,14 @@ export class ChartReportComponent implements OnInit {
             y: r.total,
           });
         });
-        this.officeChartOptions.title.text = 'Top Five Products';
-        this.officeChartOptions.xAxis.title.text = `<span style="color:black;"><b>Products</b><span>`;
-        this.officeChartOptions.yAxis.title.text = '<span style="color:black;"><b>Amount($)</b><span>';
-        this.officeChartOptions.navigator.enabled = false;
-        this.officeChartOptions.series[0].data = chartsValue;
-        Highcharts.chart('product', this.officeChartOptions);
+        const id = 'product';
+        this.chartOptions.officeChartOptions.title.text = 'Top Five Products';
+        this.chartOptions.officeChartOptions.exporting.buttons.contextButton.onclick = () => { this.chartOptions.fullScreen(id); };
+        this.chartOptions.officeChartOptions.xAxis.title.text = `<span style="color:black;"><b>Products</b><span>`;
+        this.chartOptions.officeChartOptions.yAxis.title.text = '<span style="color:black;"><b>Amount($)</b><span>';
+        this.chartOptions.officeChartOptions.navigator.enabled = false;
+        this.chartOptions.officeChartOptions.series[0].data = chartsValue;
+        Highcharts.chart('product', this.chartOptions.officeChartOptions);
       });
   }
 }
