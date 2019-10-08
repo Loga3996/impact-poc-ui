@@ -1,4 +1,4 @@
-﻿# impact-poc-ui
+﻿# IMPACT-POC-UI
 This project was generated with Angular CLI version 7.2.0.
 
 # General Instructions
